@@ -1,12 +1,11 @@
-import  numpy
-import cv2
 from cv2 import *
-from Modelo.Hardware.Camara import Camara
-import Services.ReconocedorFacial as Reconocedor
+import cv2
+import ReconocedorFacial as Reconocedor
+from ManiquiFacePPS1.Modelo.Hardware import Camara
 
 
 def main():
-    camara = Camara(0)
+    camara = Camara.Camara(0)
     camara.conectarCamara()
     namedWindow("webcam")
     while True:
