@@ -1,15 +1,14 @@
 from cv2 import *
 import cv2
 import ReconocedorFacial as Reconocedor
-from Modelo.Hardware import Camara
 
 
 def main():
-    camara = Camara.Camara(0)
-    camara.conectarCamara()
+    vc = VideoCapture(0)
+
     namedWindow("webcam")
     while True:
-        imagen = camara.tomarFoto()
+        va, imagen = vc.read()
         carasEncontradas = Reconocedor.detectarCara(imagen)
         
         for (x, y, w, h) in carasEncontradas:#se dibuja un rectangulo en la cara y se muestra
