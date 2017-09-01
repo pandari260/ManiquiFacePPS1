@@ -26,7 +26,6 @@ def main():
             if validadorDesp.validarDesplazamiento((x,y)):
                 desplazamiento =  Calculador.calcularDistanciaCM(500,115,math.fabs(x-500))
                 dCabezaMano = 100
-                #if (x>=320) :
                 hipotenusa = Calculador.calcularDistanciaLados(desplazamiento,dCabezaMano)
                 angulo = Calculador.calcularAngulo(dCabezaMano,hipotenusa)
                 print "x "+str(angulo)

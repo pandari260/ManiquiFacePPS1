@@ -4,10 +4,11 @@ class ValidadorDesplazamiento(object):
     def __init__(self, ubicacion):
         self.proporsion = 20
         self.ubiActual = ubicacion
+        #no tendria que haver un para la  y otro para la y?
         
     def validarDesplazamiento(self,direccion):
-        if((direccion[0]>=(self.ubiActual[0]+self.proporsion)) or (direccion[0]<=(self.ubiActual[0]-self.proporsion))
-        or (direccion[1]>=(self.ubiActual[1]+self.proporsion)) or (direccion[1]<=(self.ubiActual[1]-self.proporsion))):
+        if(math.fabs(direccion[0]-self.ubiActual[0]) >= self.proporsion 
+           or math.fabs(direccion[1]-self.ubiActual[1]) >= self.proporsion):
             self.ubiActual = direccion
             return True
         else:
