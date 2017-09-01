@@ -1,9 +1,9 @@
-
+import math
 class ValidadorDesplazamiento(object):
    
-    def __init__(self):
+    def __init__(self, ubicacion):
         self.proporsion = 40
-        self.ubiActual = (200,300) #Ver para obtener la posicion en la que esta la cabeza
+        self.ubiActual = ubicacion
         
     def validarDesplazamiento(self,direccion):
         if((direccion[0]>=(self.ubiActual[0]+self.proporsion)) or (direccion[0]<=(self.ubiActual[0]-self.proporsion))
