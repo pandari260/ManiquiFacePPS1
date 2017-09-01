@@ -1,9 +1,16 @@
 import math
    
-def calcularDistancia(puntoA,puntoB):
-    dx = puntoA[0] - puntoB[0]
-    dy = puntoA[1] - puntoB[1]
-    return round(math.sqrt(math.pow(dx, 2) + math.pow(dy,2)))
+def calcularDistancia(ladoA,ladoB):
+    powLadoA = math.pow(ladoA, 2)
+    powLadoB = math.pow(ladoB,2)
+    return round(math.sqrt(powLadoA + powLadoB))
 
-
-#falta calcular el angulo       
+def calcularAngulo(ladoOpuesto,hipotenusa):
+    division = ladoOpuesto/hipotenusa
+    arcoSeno = math.asin(division)
+    return int((arcoSeno*180)/math.pi)
+    
+def calcularAnguloC(ladoOpuesto,hipotenusa):
+    division = ladoOpuesto/hipotenusa
+    arcoSeno = math.acos(division)
+    return int((arcoSeno*180)/math.pi)

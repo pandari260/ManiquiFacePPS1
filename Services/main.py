@@ -16,11 +16,13 @@ def main():
         for (x, y, w, h) in carasEncontradas:#se dibuja un rectangulo en la cara y se muestra
             cv2.rectangle(imagen, (x, y), (x+w, y+h), (0, 255, 0), 5)#(foto, ubicacion, (largo alto), )
             cv2.circle(imagen,punto90,1, (0, 255, 0), 5)
-            cv2.line(imagen,punto90,(x,y),(0, 0, 255),3)
-
+            dCamaraCabeza = 40
+            dCabezaMano = 100
             #if validadorDesp.validarDesplazamiento((x,y)):
             puntoDetectado = (x,y)
-            print (Calculador.calcularDistancia(punto90,puntoDetectado))  
+            hipotenusa = Calculador.calcularDistancia(dCamaraCabeza,dCabezaMano)
+            print hipotenusa
+            print(Calculador.calcularAnguloC(dCabezaMano,hipotenusa))
 
         imshow("WebCam", imagen)
        
