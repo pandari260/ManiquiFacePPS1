@@ -4,6 +4,7 @@ import ReconocedorFacial as Reconocedor
 import ValidadorDesplazamiento 
 import Calculador 
 import ComunicadorSerial
+import math
 
 def main():
     vc = VideoCapture(0)
@@ -23,15 +24,13 @@ def main():
             cv2.circle(imagen,extremoDerecho,1, (0, 255, 0), 5)
             
             if validadorDesp.validarDesplazamiento((x,y)):
-                desplazamiento =  Calculador.calcularDistanciaCM(180,40,x-320)
+                desplazamiento =  Calculador.calcularDistanciaCM(500,115,math.fabs(x-500))
                 dCabezaMano = 100
-                
-                if (x>=320) :
-
-                    hipotenusa = Calculador.calcularDistanciaLados(desplazamiento,dCabezaMano)
-                    angulo = Calculador.calcularAngulo(dCabezaMano,hipotenusa)
-                    print "x "+str(angulo)
-                    comunicador.enviarDatos("x"+str(angulo))
+                #if (x>=320) :
+                hipotenusa = Calculador.calcularDistanciaLados(desplazamiento,dCabezaMano)
+                angulo = Calculador.calcularAngulo(dCabezaMano,hipotenusa)
+                print "x "+str(angulo)
+                comunicador.enviarDatos("x"+str(angulo))
 
         imshow("webcam", imagen)
        
