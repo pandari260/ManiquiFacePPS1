@@ -3,3 +3,4 @@
 .project
 .pydevproject
 Services/ReconocedorFacial.pyc
+Services/Desplazador.py
