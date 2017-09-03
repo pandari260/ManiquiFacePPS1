@@ -15,6 +15,7 @@ def main():
     validadorDesp = ValidadorDesplazamiento.ValidadorDesplazamiento(punto90) 
     namedWindow("webcam")
     cabeza = Cabeza((520, 240))
+    cabeza.start()
     while True:
         va, imagen = vc.read()
         carasEncontradas = Reconocedor.detectarCara(imagen)
@@ -25,7 +26,7 @@ def main():
             
             if validadorDesp.validarDesplazamiento((x,y)):
                 angulo = Calculador.CalcularDesplazamiento(cabeza.getDistanciaCamara(), math.fabs(x-500),distanciaCabezaObjetoDetectado)
-                cabeza.girar(angulo, 'x')
+                cabeza.setAngulo(angulo, 'x')
 
         imshow("webcam", imagen)
        
