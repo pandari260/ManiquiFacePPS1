@@ -17,3 +17,8 @@ def calcularAngulo(ladoOpuesto,hipotenusa):
     division = ladoOpuesto/hipotenusa
     arcoSeno = math.acos(division)
     return int((arcoSeno*180)/math.pi)
+
+def CalcularDesplazamiento(distanciaCabezaCamara, distanciaObjetoPuntoMedio,distanciaCabezaObjetoDetectado):
+    desplazamiento =  calcularDistanciaCM(500,distanciaCabezaCamara,distanciaObjetoPuntoMedio)
+    hipotenusa = calcularDistanciaLados(desplazamiento,distanciaCabezaObjetoDetectado)
+    return calcularAngulo(distanciaCabezaObjetoDetectado,hipotenusa)

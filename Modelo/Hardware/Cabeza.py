@@ -1,34 +1,43 @@
 from Modelo.Hardware.ServoMotor import ServoMotor
-limites = {'x' : [90,45,135], 'y' : [90,45, 135]}# [posicion inicial, limite inferior, limite superior]
+limites = {'x' : [90,0,180], 'y' : [90,0,180]}
+#import ComunicadorSerial
+
 
 class Cabeza(object):
+    
+    def girar(self, grados, eje):
+        inf = limites[eje][1]
+        sup = limites[eje][2]
+        print(sup)
+        
+        angulo = limites[eje][0] + grados
+        if(angulo > sup):
+            print("entro en superior")
+            angulo = sup
+        elif(angulo < inf):
+            angulo = inf
+    
+        #self.comunicador.enviarDatos(eje+str(angulo))
+        print("la cabeza giro al angulo: " + str(angulo))
    
 
-    def __init__(self):
-        servoX = ServoMotor(limites['x'][0])
-        servoY = ServoMotor(limites['y'][0])
-        self.servos = {}
-        self.servos['x'] = servoX
-        self.servos['y'] = servoY
+    def __init__(self, calibracion):
+        self.puntoCalibracionInicial = calibracion
+        self.distanciaCamara = 115 #cambiar por la funcion que calcula la distancia
+        #self.comunicador = ComunicadorSerial.ComunicadorSerial()
+        self.girar(limites['x'][0], 'x')
+        self.girar(limites['y'][0], 'y')
+        
+    def getDistanciaCamara(self):
+        return self.distanciaCamara
+
         
        
         
-    def girar(self, grados, eje):
-        servo = self.servos[eje]
-        inf = limites[eje][1]
-        sup = limites[eje][2]
-        
-        sum = servo.orientacion + grados
-        if(sum > sup):
-            servo.girar(sup)
-        elif(sum < inf):
-            servo.girar(inf)
-        else:
-            servo.girar(sum)
     
-    def getX(self):
-        return self.servos['x'].orientacion
-    def getY(self):
-        return self.servos['y'].orientacion
+    
+    def getCalibracion(self):
+        return self.puntoCalibracionInicial
+   
         
        
