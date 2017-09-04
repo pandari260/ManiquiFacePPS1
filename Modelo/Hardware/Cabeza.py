@@ -2,6 +2,7 @@ from Modelo.Hardware.ServoMotor import ServoMotor
 limites = {'x' : [90,0,180], 'y' : [90,0,180]}
 #import ComunicadorSerial
 from threading import Thread
+from threading import Event
 
 
 
@@ -32,16 +33,19 @@ class Cabeza(Thread):
         self.posiciones['y'] = limites['y'][0]
         self.girar(self.posiciones['x'], 'x')
         self.girar(self.posiciones['y'], 'y')
+        self.evento = Event()
+       
+        
         
     def run(self):
         while True:
+            self.evento.wait()
             self.girar(self.posiciones['x'], 'x')
+            self.evento.clear()
     
     def setAngulo(self, angulo, eje):
         self.posiciones[eje] = angulo + limites[eje][0]
-        
-        
-      
+        self.evento.set()
         
     def getDistanciaCamara(self):
         return self.distanciaCamara
