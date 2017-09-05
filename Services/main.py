@@ -4,7 +4,7 @@ import ReconocedorFacial as Reconocedor
 import ValidadorDesplazamiento 
 import Calculador 
 import math
-from Modelo.Hardware.Cabeza import Cabeza
+import Modelo.Hardware.Cabeza as Cabeza
 punto90 = (0,240)
 color = (0,255,0)
 grosorFigura = 5
@@ -14,7 +14,7 @@ def main():
     vc = VideoCapture(0)
     validadorDesp = ValidadorDesplazamiento.ValidadorDesplazamiento(punto90) 
     namedWindow("webcam")
-    cabeza = Cabeza((520, 240))
+    cabeza = Cabeza.Cabeza((520, 240))
     cabeza.start()
     while True:
         va, imagen = vc.read()
