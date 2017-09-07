@@ -26,7 +26,8 @@ class Cabeza(Thread):
     def __init__(self, calibracion):
         Thread.__init__(self)
         self.puntoCalibracionInicial = calibracion
-        self.distanciaCamara = 115 #cambiar por la funcion que calcula la distancia
+        self.distanciaHorizontal = 115 #cambiar por la funcion que calcula la distancia
+        self.distanciaVertical = 53
         self.comunicador = ComunicadorSerial.ComunicadorSerial()
         self.posiciones = {}
         self.posiciones['x'] = limites['x'][0]
@@ -48,8 +49,10 @@ class Cabeza(Thread):
         self.posiciones[eje] = angulo + limites[eje][0]
         self.evento.set()
         
-    def getDistanciaCamara(self):
-        return self.distanciaCamara
+    def getDistanciaHorizontal(self):
+        return self.distanciaHorizontal
+    def getDistanciaVerical(self):
+        return self.distanciaVertical
     def getCalibracion(self):
         return self.puntoCalibracionInicial
    

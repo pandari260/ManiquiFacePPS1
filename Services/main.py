@@ -4,7 +4,7 @@ import ReconocedorFacial as Reconocedor
 import ValidadorDesplazamiento 
 import Calculador 
 import math
-import ManiquiFacePPS1.Modelo.Hardware.Cabeza as Cabeza
+import Modelo.Hardware.Cabeza as Cabeza
 punto90 = (0,240)
 color = (0,255,0)
 grosorFigura = 5
@@ -18,6 +18,7 @@ def main():
     cabeza.start()
     while True:
         va, imagen = vc.read()
+        imagen = cv2.flip(imagen, 1)
         carasEncontradas = Reconocedor.detectarCara(imagen)
         for (x, y, w, h) in carasEncontradas:#se dibuja un rectangulo en la cara y se muestra
             cv2.rectangle(imagen, (x, y), (x+w, y+h), color, grosorFigura)#(foto, ubicacion, (largo alto), )
@@ -25,11 +26,19 @@ def main():
             cv2.circle(imagen,cabeza.getCalibracion(),1, color, grosorFigura)
             
             if validadorDesp.validarDesplazamiento((x,y)):
-                anguloHorizontal = Calculador.CalcularDesplazamiento(cabeza.getDistanciaCamara(), math.fabs(x-500),distanciaCabezaObjetoDetectado)
-                anguloVertical = Calculador.CalcularDesplazamiento(cabeza.getDistanciaCamara(), math.fabs(y),distanciaCabezaObjetoDetectado)
+                direccionX = 1;
+                direccionY = 1
+                if(x < cabeza.getCalibracion()[0]):
+                    direccionX = -1
+                if(y < cabeza.getCalibracion()[1]):
+                    direccionY = -1
+                    
+                    
+                anguloHorizontal = Calculador.CalcularDesplazamiento(cabeza.getDistanciaHorizontal(), math.fabs(x-520),distanciaCabezaObjetoDetectado)
+                anguloVertical = Calculador.CalcularDesplazamiento(cabeza.getDistanciaHorizontal(), math.fabs(y-240),distanciaCabezaObjetoDetectado)
 
-                cabeza.setAngulo(anguloHorizontal, 'x')
-                cabeza.setAngulo(anguloVertical, 'y')
+                cabeza.setAngulo(anguloHorizontal*direccionX, 'x')
+                cabeza.setAngulo(anguloVertical*direccionY, 'y')
 
 
         imshow("webcam", imagen)
