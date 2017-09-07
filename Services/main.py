@@ -4,7 +4,7 @@ import ReconocedorFacial as Reconocedor
 import ValidadorDesplazamiento 
 import Calculador 
 import math
-import Modelo.Hardware.Cabeza as Cabeza
+import ManiquiFacePPS1.Modelo.Hardware.Cabeza as Cabeza
 punto90 = (0,240)
 color = (0,255,0)
 grosorFigura = 5
@@ -25,8 +25,12 @@ def main():
             cv2.circle(imagen,cabeza.getCalibracion(),1, color, grosorFigura)
             
             if validadorDesp.validarDesplazamiento((x,y)):
-                angulo = Calculador.CalcularDesplazamiento(cabeza.getDistanciaCamara(), math.fabs(x-500),distanciaCabezaObjetoDetectado)
-                cabeza.setAngulo(angulo, 'x')
+                anguloHorizontal = Calculador.CalcularDesplazamiento(cabeza.getDistanciaCamara(), math.fabs(x-500),distanciaCabezaObjetoDetectado)
+                anguloVertical = Calculador.CalcularDesplazamiento(cabeza.getDistanciaCamara(), math.fabs(y),distanciaCabezaObjetoDetectado)
+
+                cabeza.setAngulo(anguloHorizontal, 'x')
+                cabeza.setAngulo(anguloVertical, 'y')
+
 
         imshow("webcam", imagen)
        

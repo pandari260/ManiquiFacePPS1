@@ -1,6 +1,6 @@
-from Modelo.Hardware.ServoMotor import ServoMotor
+import ServoMotor
 limites = {'x' : [90,0,180], 'y' : [90,0,180]}
-#import ComunicadorSerial
+import ComunicadorSerial
 from threading import Thread
 from threading import Event
 
@@ -19,7 +19,7 @@ class Cabeza(Thread):
         elif(angulo < inf):
             angulo = inf
     
-        #self.comunicador.enviarDatos(eje+str(angulo))
+        self.comunicador.enviarDatos(eje+chr(angulo))
         print("la cabeza giro al angulo: " + str(angulo))
    
 
@@ -27,7 +27,7 @@ class Cabeza(Thread):
         Thread.__init__(self)
         self.puntoCalibracionInicial = calibracion
         self.distanciaCamara = 115 #cambiar por la funcion que calcula la distancia
-        #self.comunicador = ComunicadorSerial.ComunicadorSerial()
+        self.comunicador = ComunicadorSerial.ComunicadorSerial()
         self.posiciones = {}
         self.posiciones['x'] = limites['x'][0]
         self.posiciones['y'] = limites['y'][0]
@@ -41,6 +41,7 @@ class Cabeza(Thread):
         while True:
             self.evento.wait()
             self.girar(self.posiciones['x'], 'x')
+            self.girar(self.posiciones['y'], 'y')
             self.evento.clear()
     
     def setAngulo(self, angulo, eje):
