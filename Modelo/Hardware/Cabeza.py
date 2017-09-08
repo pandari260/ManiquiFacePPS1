@@ -29,9 +29,10 @@ class Cabeza(Thread):
         self.posiciones = {}
         self.posiciones['x'] = limites['x'][0]
         self.posiciones['y'] = limites['y'][0]
+        self.evento = Event()
+        
         self.girar(self.posiciones['x'], 'x')
         self.girar(self.posiciones['y'], 'y')
-        self.evento = Event()
        
         
         
