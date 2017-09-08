@@ -1,12 +1,11 @@
 import math
 
-def calcularDistanciaPuntos(puntoA,puntoB):
-    dx = puntoA[0] - puntoB[0]
-    dy = puntoA[1] - puntoB[1]
-    return math.sqrt(math.pow(dx, 2) + math.pow(dy,2))
+px = 10
+cm = 2
 
-def calcularDistanciaCM(pxTotal,cmTotal,pxIni):
-    return (pxIni*cmTotal)/pxTotal
+
+def calcularDistanciaCM(pixeles):
+    return (pixeles*cm)/px
  
 def calcularDistanciaLados(ladoA,ladoB):
     powLadoA = math.pow(ladoA, 2)
@@ -18,7 +17,7 @@ def calcularAngulo(ladoOpuesto,hipotenusa):
     arcoSeno = math.acos(division)
     return int((arcoSeno*180)/math.pi)
 
-def CalcularDesplazamiento(distanciaCabezaCamara, distanciaObjetoPuntoMedio,distanciaCabezaObjetoDetectado):
-    desplazamiento =  calcularDistanciaCM(500,distanciaCabezaCamara,distanciaObjetoPuntoMedio)
+def CalcularDesplazamiento(pixelesObjetoCalibracion,distanciaCabezaObjetoDetectado):
+    desplazamiento =  calcularDistanciaCM(pixelesObjetoCalibracion)
     hipotenusa = calcularDistanciaLados(desplazamiento,distanciaCabezaObjetoDetectado)
     return calcularAngulo(distanciaCabezaObjetoDetectado,hipotenusa)

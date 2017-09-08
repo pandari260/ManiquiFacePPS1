@@ -14,7 +14,7 @@ def main():
     vc = VideoCapture(0)
     validadorDesp = ValidadorDesplazamiento.ValidadorDesplazamiento(punto90) 
     namedWindow("webcam")
-    cabeza = Cabeza.Cabeza((520,240))
+    cabeza = Cabeza.Cabeza((320,240))
     cabeza.start()
     while True:
         va, imagen = vc.read()
@@ -34,8 +34,8 @@ def main():
                     direccionY = -1
                     
                     
-                anguloHorizontal = Calculador.CalcularDesplazamiento(cabeza.getDistanciaHorizontal(), math.fabs(x-520),distanciaCabezaObjetoDetectado)
-                anguloVertical = Calculador.CalcularDesplazamiento(cabeza.getDistanciaHorizontal(), math.fabs(y-240),distanciaCabezaObjetoDetectado)
+                anguloHorizontal = Calculador.CalcularDesplazamiento(math.fabs(x-cabeza.getCalibracion()[0]),distanciaCabezaObjetoDetectado)
+                anguloVertical = Calculador.CalcularDesplazamiento(math.fabs(y-cabeza.getCalibracion()[1]),distanciaCabezaObjetoDetectado)
 
                 cabeza.setAngulo(anguloHorizontal*direccionX, 'x')
                 cabeza.setAngulo(anguloVertical*direccionY, 'y')
