@@ -20,7 +20,6 @@ class Cabeza(Thread):
             angulo = inf
     
         self.comunicador.enviarDatos(eje+chr(angulo))
-        print("la cabeza giro al angulo: " + str(angulo))
    
 
     def __init__(self, calibracion):

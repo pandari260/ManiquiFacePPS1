@@ -14,7 +14,7 @@ def main():
     vc = VideoCapture(0)
     validadorDesp = ValidadorDesplazamiento.ValidadorDesplazamiento(punto90) 
     namedWindow("webcam")
-    cabeza = Cabeza.Cabeza((520, 240))
+    cabeza = Cabeza.Cabeza((520,240))
     cabeza.start()
     while True:
         va, imagen = vc.read()
