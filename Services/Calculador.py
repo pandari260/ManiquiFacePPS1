@@ -1,7 +1,7 @@
 import math
 
-px = 10
-cm = 2
+px = 640
+cm = 100
 
 
 def calcularDistanciaCM(pixeles):
