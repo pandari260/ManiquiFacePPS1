@@ -10,7 +10,7 @@ color = (0,255,0)
 grosorFigura = 5
 distanciaCabezaObjetoDetectado = 100
 textoInicio = 'Para comenzar por favor coloquese frente a la cabeza y presione C para calibrar'
-textoCalibracion = 'Punto de calibracion'
+textoCalibracion = 'Punto de calibracion: '
 textoRecalibrar = "presione R para recalibrar"
 
 def main():
@@ -32,10 +32,10 @@ def main():
                     cabeza.start()
 
             else:
-                cv2.putText(imagen,textoCalibracion,cabeza.getCalibracion(), fuente, 0.45,(0,255,0),2)
+                cv2.putText(imagen,textoCalibracion,cabeza.getCalibracion(), fuente, 1,(0,255,0),2)
 
                 cv2.circle(imagen,(cabeza.getCalibracion()[0]+2,cabeza.getCalibracion()[1]+10),1, color, grosorFigura)
-            
+                
                 if validadorDesp.validarDesplazamiento((x,y)):
                     direccionX = 1;
                     direccionY = 1
@@ -44,9 +44,9 @@ def main():
                     if(y < cabeza.getCalibracion()[1]):
                         direccionY = -1
                         
-                        
-                    anguloHorizontal = Calculador.CalcularDesplazamiento(math.fabs(x-cabeza.getCalibracion()[0]),distanciaCabezaObjetoDetectado)
-                    anguloVertical = Calculador.CalcularDesplazamiento(math.fabs(y-cabeza.getCalibracion()[1]),distanciaCabezaObjetoDetectado)
+                    distancia = Calculador.calcularDistancia(h/2)  
+                    anguloHorizontal = Calculador.CalcularDesplazamiento(math.fabs(x-cabeza.getCalibracion()[0]),distancia)
+                    anguloVertical = Calculador.CalcularDesplazamiento(math.fabs(y-cabeza.getCalibracion()[1]),distancia)
     
                     cabeza.setAngulo(anguloHorizontal*direccionX, 'x')
                     cabeza.setAngulo(anguloVertical*direccionY, 'y')
