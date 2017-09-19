@@ -2,7 +2,7 @@ from cv2 import *
 import cv2
 import ReconocedorFacial as Reconocedor
 import ValidadorDesplazamiento 
-import Calculador 
+import Calculador, TrackerFace
 import math
 import numpy as np
 import ManiquiFacePPS1.Modelo.Hardware.Cabeza as Cabeza
@@ -17,13 +17,10 @@ textoRecalibrar = "presione R para recalibrar"
 
 def main():
     vc = VideoCapture(0)
-    validadorDesp = ValidadorDesplazamiento.ValidadorDesplazamiento(punto90) 
+    validadorDesp = ValidadorDesplazamiento.ValidadorDesplazamiento(punto90)
     namedWindow("webcam")
     cabeza = None
-    track_window = None
-    term_crit = None
-    flag = False
-    roi_hist = None
+    rastreadorCara = None
 
     while True:
         va, imagen = vc.read()
@@ -32,22 +29,13 @@ def main():
 
         for (x, y, w, h) in carasEncontradas:
             if len(carasEncontradas) ==1:
-                track_window = (x, y, w, h)
-                roi = imagen[y:y + h, x:x + w]
-                hsv_roi = cv2.cvtColor(roi, cv2.COLOR_BGR2HSV)
-                mask = cv2.inRange(hsv_roi, np.array((0., 60., 32.)), np.array((180., 255., 255.)))
-                roi_hist = cv2.calcHist([hsv_roi], [0], mask, [180], [0, 180])
-                cv2.normalize(roi_hist, roi_hist, 0, 255, cv2.NORM_MINMAX)
-                term_crit = (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 1)
-                flag = True
+                rastreadorCara = TrackerFace.TrackerFace(imagen,(x,y,w,h))
+                rastreadorCara.identificarBlob()
 
-        if(flag == True):
-            ret, imagen = vc.read()
-            imagen = cv2.flip(imagen, 1)
-
+        if(rastreadorCara != None):
             hsv = cv2.cvtColor(imagen, cv2.COLOR_BGR2HSV)
-            dst = cv2.calcBackProject([hsv], [0], roi_hist, [0, 180], 1)
-            ret, track_window = cv2.meanShift(dst, track_window, term_crit)
+            dst = cv2.calcBackProject([hsv], [0], rastreadorCara.getHist(), [0, 180], 1)
+            ret, track_window = cv2.meanShift(dst, rastreadorCara.getTracker(), rastreadorCara.getCriterio())
             x, y, w, h = track_window
             cv2.rectangle(imagen, (x, y), (x + w, y + h), (0,255,0), 3)
 
