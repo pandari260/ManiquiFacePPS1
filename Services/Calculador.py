@@ -6,8 +6,11 @@ pxPropInver = 50.0
 
 
 
-def calcularDesplazamiento1(pixeles, cm):
+def calcularDesplazamientoCM(pixeles, cm):
     return (pixeles*cm)/pxAmplitud
+
+def calcularEjeCalibracion(posicion, distancia, puntoMedio):
+    return posicion*pxAmplitud/distancia +puntoMedio
  
 def calcularHipotenusa(ladoA,ladoB):
     powLadoA = math.pow(ladoA, 2)
@@ -24,6 +27,6 @@ def calcularDistancia(px):
     
 
 def CalcularDesplazamiento(pixelesObjetoCalibracion,distanciaCabezaObjetoDetectado):
-    desplazamiento =  calcularDesplazamiento1(pixelesObjetoCalibracion, distanciaCabezaObjetoDetectado )
+    desplazamiento =  calcularDesplazamientoCM(pixelesObjetoCalibracion, distanciaCabezaObjetoDetectado )
     hipotenusa = calcularHipotenusa(desplazamiento,distanciaCabezaObjetoDetectado)
     return calcularAngulo(distanciaCabezaObjetoDetectado,hipotenusa)

@@ -5,9 +5,9 @@ import ValidadorDesplazamiento
 import Calculador, TrackerFace
 import math
 import numpy as np
-import ManiquiFacePPS1.Modelo.Hardware.Cabeza as Cabeza
+import Modelo.Hardware.Cabeza as Cabeza
 
-punto90 = (0,240)
+punto90 = (320,240)
 color = (0,255,0)
 grosorFigura = 5
 distanciaCabezaObjetoDetectado = 100
@@ -43,11 +43,15 @@ def main():
             fuente = cv2.FONT_HERSHEY_SIMPLEX
             cv2.putText(imagen,textoInicio,(5,15), fuente, 0.45,(0,255,0),2)
             if waitKey(1) & 0xFF == ord('c'):
-                cabeza = Cabeza.Cabeza((x,y))
+                
+                d = Calculador.calcularDistancia(h/2)
+                posicionHorizontal = Calculador.calcularDesplazamientoCM(x, d) - Calculador.calcularDesplazamientoCM(punto90[0], d)
+                posicionVertical = Calculador.calcularDesplazamientoCM(y, d) - Calculador.calcularDesplazamientoCM(punto90[1], d)
+                cabeza = Cabeza.Cabeza((x,y), (posicionHorizontal, posicionVertical))
+                 
                 cabeza.start()
 
         else:
-            cv2.putText(imagen,textoCalibracion,cabeza.getCalibracion(), fuente, 1,(0,255,0),2)
 
             cv2.circle(imagen,(cabeza.getCalibracion()[0]+2,cabeza.getCalibracion()[1]+10),1, color, grosorFigura)
 
@@ -60,6 +64,11 @@ def main():
                     direccionY = -1
 
                 distancia = Calculador.calcularDistancia(h/2)
+                x1 = int(Calculador.calcularEjeCalibracion(cabeza.posicion[0], distancia, 320))
+                x2 = int(Calculador.calcularEjeCalibracion(cabeza.posicion[1], distancia, 240))
+                cabeza.puntoCalibracionInicial = (x1,x2)
+                cv2.putText(imagen,textoCalibracion,cabeza.getCalibracion(), fuente, 1,(0,255,0),2)
+
                 anguloHorizontal = Calculador.CalcularDesplazamiento(math.fabs(x-cabeza.getCalibracion()[0]),distancia)
                 anguloVertical = Calculador.CalcularDesplazamiento(math.fabs(y-cabeza.getCalibracion()[1]),distancia)
 
