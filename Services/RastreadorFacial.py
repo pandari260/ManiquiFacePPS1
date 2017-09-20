@@ -2,7 +2,7 @@ from cv2 import *
 import cv2
 import numpy as np
 
-class TrackerFace(object):
+class RastreadorFacial(object):
 
 
     def __init__(self,imagen,tracker):

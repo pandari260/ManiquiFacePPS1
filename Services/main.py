@@ -2,10 +2,10 @@ from cv2 import *
 import cv2
 import ReconocedorFacial as Reconocedor
 import ValidadorDesplazamiento 
-import Calculador, TrackerFace
+import Calculador, RastreadorFacial
 import math
 import numpy as np
-import Modelo.Hardware.Cabeza as Cabeza
+import ManiquiFacePPS1.Modelo.Hardware.Cabeza as Cabeza
 
 punto90 = (320,240)
 color = (0,255,0)
@@ -21,18 +21,23 @@ def main():
     namedWindow("webcam")
     cabeza = None
     rastreadorCara = None
+    flagIdentificado = False
 
     while True:
         va, imagen = vc.read()
         imagen = cv2.flip(imagen, 1)
         carasEncontradas = Reconocedor.detectarCara(imagen)
 
+        if len(carasEncontradas) == 0:
+            flagIdentificado = False
+
         for (x, y, w, h) in carasEncontradas:
             if len(carasEncontradas) ==1:
-                rastreadorCara = TrackerFace.TrackerFace(imagen,(x,y,w,h))
+                rastreadorCara = RastreadorFacial.RastreadorFacial(imagen, (x, y, w, h))
                 rastreadorCara.identificarBlob()
+                flagIdentificado = True
 
-        if(rastreadorCara != None):
+        if rastreadorCara != None and flagIdentificado:
             hsv = cv2.cvtColor(imagen, cv2.COLOR_BGR2HSV)
             dst = cv2.calcBackProject([hsv], [0], rastreadorCara.getHist(), [0, 180], 1)
             ret, track_window = cv2.meanShift(dst, rastreadorCara.getTracker(), rastreadorCara.getCriterio())
