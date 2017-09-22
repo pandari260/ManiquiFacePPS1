@@ -18,13 +18,13 @@ class Cabeza(Thread):
         elif(angulo < inf):
             angulo = inf
     
-        self.comunicador.enviarDatos(eje+chr(angulo))
-        #print("la cabeza giro al angulo:" + str(angulo) + " en el eje" + eje)
+        #self.comunicador.enviarDatos(eje+chr(angulo))
+        print("la cabeza giro al angulo:" + str(angulo) + " en el eje" + eje)
 
     def __init__(self, calibracion, p):
         Thread.__init__(self)
-        self.puntoCalibracionInicial = calibracion
-        self.comunicador = ComunicadorSerial.ComunicadorSerial()
+        self.puntoCalibracion = calibracion
+        #self.comunicador = ComunicadorSerial.ComunicadorSerial()
         self.posiciones = {}
         self.posiciones['x'] = limites['x'][0]
         self.posiciones['y'] = limites['y'][0]
@@ -53,7 +53,7 @@ class Cabeza(Thread):
     def getDistanciaVerical(self):
         return self.distanciaVertical
     def getCalibracion(self):
-        return self.puntoCalibracionInicial
+        return self.puntoCalibracion
    
         
        
