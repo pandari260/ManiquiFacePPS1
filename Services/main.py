@@ -37,13 +37,14 @@ def main():
                     posicion = Calculador.calcularPosicionCabeza(puntoCentro, (x,y), h)
                     cabeza = Cabeza.Cabeza((x,y), posicion)
                     orientador = Orientador(cabeza)
+                    orientador.start()
     
             else:
     
                 cv2.circle(imagen,(cabeza.getCalibracion()[0]+2,cabeza.getCalibracion()[1]+10),1, color, grosorFigura)
     
                 if validadorDesp.validarDesplazamiento((x,y)):
-                    orientador.Reorientar(x, y, h, puntoCentro)
+                    orientador.Reorientar(x, y, h)
                     cv2.putText(imagen,textoCalibracion,cabeza.getCalibracion(), fuente, 1,color,2)
 
 
