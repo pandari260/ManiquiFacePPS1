@@ -13,15 +13,14 @@ color = (0,255,0)
 grosorFigura = 5
 fuente = cv2.FONT_HERSHEY_SIMPLEX
 textoInicio = 'Para comenzar por favor coloquese frente a la cabeza y presione C para calibrar'
-textoCalibracion = 'Punto de calibracion: '
+textoCalibracion = 'Cabeza'
 textoRecalibrar = "presione R para recalibrar"
 
 def main():
     vc = VideoCapture(0)
     validadorDesp = ValidadorDesplazamiento.ValidadorDesplazamiento(puntoCentro)
     namedWindow("webcam")
-    cabeza = None
-    orientador = None
+    orientadores = []
    
 
     while True:
@@ -31,21 +30,33 @@ def main():
 
         cv2.rectangle(imagen, (x, y), (x + w, y + h), color, 3)
         if flag:
-            if(cabeza == None):
+            if(orientadores.__len__() < 3):
                 cv2.putText(imagen,textoInicio,(5,15), fuente, 0.45,color,2)
                 if waitKey(1) & 0xFF == ord('c'):
                     posicion = Calculador.calcularPosicionCabeza(puntoCentro, (x,y), h)
-                    cabeza = Cabeza.Cabeza((x,y), posicion)
-                    orientador = Orientador(cabeza)
+                    nuevaCabeza = Cabeza.Cabeza((x,y), posicion, orientadores.__len__())
+                    orientador = Orientador(nuevaCabeza)
                     orientador.start()
+                    orientadores.append(orientador)
+
     
             else:
-    
-                cv2.circle(imagen,(cabeza.getCalibracion()[0]+2,cabeza.getCalibracion()[1]+10),1, color, grosorFigura)
+                for c in orientadores:
+                    cv2.circle(imagen,(c.cabeza.getCalibracion()[0]+2,c.cabeza.getCalibracion()[1]+10),1, color, grosorFigura)
+                    cv2.putText(imagen,textoCalibracion + str(c.cabeza.id),c.cabeza.getCalibracion(), fuente, 0.5,color,2)
+
     
                 if validadorDesp.validarDesplazamiento((x,y)):
-                    orientador.Reorientar(x, y, h)
-                    cv2.putText(imagen,textoCalibracion,cabeza.getCalibracion(), fuente, 1,color,2)
+                    for c in orientadores:
+                        print("-------------------------------------------------")
+                        print("")
+                        print("")
+                        print("")
+                        
+                        c.Reorientar(x, y, h)
+                                                
+                       
+
 
 
 
