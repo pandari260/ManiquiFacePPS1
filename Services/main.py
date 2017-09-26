@@ -11,6 +11,7 @@ from Orientador import Orientador
 puntoCentro = (320,240)
 color = (0,255,0)
 grosorFigura = 5
+fuente = cv2.FONT_HERSHEY_SIMPLEX
 textoInicio = 'Para comenzar por favor coloquese frente a la cabeza y presione C para calibrar'
 textoCalibracion = 'Punto de calibracion: '
 textoRecalibrar = "presione R para recalibrar"
@@ -28,10 +29,9 @@ def main():
         imagen = cv2.flip(imagen, 1)
         flag,x,y,w,h = Reconocedor.detectarCara(imagen)#bool si se encontro cara, posicion (x,y), ancho y alto
 
-        cv2.rectangle(imagen, (x, y), (x + w, y + h), (0,255,0), 3)
+        cv2.rectangle(imagen, (x, y), (x + w, y + h), color, 3)
         if flag:
             if(cabeza == None):
-                fuente = cv2.FONT_HERSHEY_SIMPLEX
                 cv2.putText(imagen,textoInicio,(5,15), fuente, 0.45,color,2)
                 if waitKey(1) & 0xFF == ord('c'):
                     posicion = Calculador.calcularPosicionCabeza(puntoCentro, (x,y), h)
