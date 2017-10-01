@@ -28,9 +28,11 @@ def main():
         imagen = cv2.flip(imagen, 1)
         flag,x,y,w,h = Reconocedor.detectarCara(imagen)#bool si se encontro cara, posicion (x,y), ancho y alto
 
-        cv2.rectangle(imagen, (x, y), (x + w, y + h), color, 3)
+        #cv2.rectangle(imagen, (x, y), (x + w, y + h), color, 3)
+        cv2.circle(imagen,(x,y),4, color, grosorFigura)
+
         if flag:
-            if(orientadores.__len__() < 3):
+            if(orientadores.__len__() < 1):
                 cv2.putText(imagen,textoInicio,(5,15), fuente, 0.45,color,2)
                 if waitKey(1) & 0xFF == ord('c'):
                     posicion = Calculador.calcularPosicionCabeza(puntoCentro, (x,y), h)
@@ -48,11 +50,6 @@ def main():
     
                 if validadorDesp.validarDesplazamiento((x,y)):
                     for c in orientadores:
-                        print("-------------------------------------------------")
-                        print("")
-                        print("")
-                        print("")
-                        
                         c.Reorientar(x, y, h)
                                                 
                        

@@ -1,5 +1,5 @@
 limites = {'x' : [90,0,180], 'y' : [90,0,180]}
-import ComunicadorSerial
+#import ComunicadorSerial
 from threading import Thread
 
 

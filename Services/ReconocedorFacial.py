@@ -37,6 +37,8 @@ def detectarCara(imagen):
         dst = cv2.calcBackProject([hsv], [0], rastreadorCara.getHist(), [0, 180], 1)
         ret, track_window = cv2.meanShift(dst, rastreadorCara.getTracker(), rastreadorCara.getCriterio())
         x, y, w, h = track_window
+        x = x+ w/2
+        y = y +h/2
     return flagIdentificado,x,y,w,h
     
    
