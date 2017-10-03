@@ -3,7 +3,7 @@ import cv2
 import RastreadorFacial
 from cv2 import *
 
-namedWindow("webcam")
+
 cascadeFrontal = 'cascade.xml'
 rostroFrontalCascade = cv2.CascadeClassifier(cascadeFrontal)
 rastreadorCara = None
