@@ -1,0 +1,97 @@
+<html>
+
+<head>
+    <title>threejs - basic</title>
+</head>
+
+<body>
+    <link rel=StyleSheet href="css/style.css" type="text/css" media=screen>
+    <script src="js/three.js"></script>
+    <script src="js/OrbitControls.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <script type="text/javascript">
+        var cont = 1;
+
+        var scene = new THREE.Scene();
+        var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+        var renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        //el tamaño de la ventana se adapata a lo que se modifique
+        var loader = new THREE.ObjectLoader();
+        var torso = null;
+        loader.load(
+            "models/head.json",
+
+            function(obj) {
+                torso = obj;
+                torso.rotation.y = 3.14
+                scene.add(obj);
+            });
+
+        window.addEventListener('resize', function() {
+            var width = window.innerWidth;
+            var height = window.innerHeight;
+            renderer.setSize(width, height);
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+        });
+        controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+        camera.position.z = 3;
+        var ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.8);
+        scene.add(ambientLight);
+
+        var update = function() {
+            var x = 1.57 / 2;
+
+            torso.rotation.x = cont * 0.0174533;
+
+            if (torso.rotation.x >= x) {
+                torso.rotation.y = 3.14;
+                torso.rotation.x = 0;
+            }
+
+        };
+
+        setInterval(function() {
+                $.ajax({
+                    data: "msg",
+                    url: 'http://localhost:8080',
+                    type: 'post',
+                    success: function(response) {
+                        cont = response;
+                        console.log(response);
+                    },
+                    failure: function(err) {
+                        console.log("couldn't make it"); //does not print
+                    }
+                });
+
+            }
+
+            , 500);
+
+        var render = function() {
+            renderer.render(scene, camera);
+
+        };
+
+        var iniciar = function() {
+            requestAnimationFrame(iniciar);
+
+            update();
+            render();
+        };
+
+        iniciar();
+
+    </script>
+
+
+</body>
+
+</html>
