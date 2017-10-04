@@ -21,7 +21,7 @@ class Cabeza(object):
         #self.comunicador.enviarDatos(eje+chr(angulo))
         print("la cabeza" + str(self.id) + " giro al angulo:" + str(angulo) + " en el eje: " + eje)
 
-    def __init__(self, calibracion, p,i):
+    def __init__(self, calibracion, p, i):
         self.id = i
         self.puntoCalibracion = calibracion
         #self.comunicador = ComunicadorSerial.ComunicadorSerial()
