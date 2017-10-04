@@ -35,7 +35,3 @@ def test_app(environ, start_response):
 def start_server(p1):
     httpd = make_server("", p1, test_app)
     httpd.serve_forever()
-
-
-if __name__ == "__main__":
-    start_server(PORT)
