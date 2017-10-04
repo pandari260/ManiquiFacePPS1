@@ -1,0 +1,66 @@
+<html>
+
+<head>
+    <title>AJAX test</title>
+</head>
+
+<body>
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        var async = true;
+        var cont = 0;
+        var gradoRecibido;
+
+        function xml_http_post(url, data, callback) {
+            var req = new XMLHttpRequest();
+            req.open("POST", url, true);
+            req.onreadystatechange = function() {
+                if (req.readyState == 4) {
+                    callback(req);
+                }
+            }
+            req.send(data);
+        }
+
+        function test_button() {
+            async = false;
+            xml_http_post("frontend.html", cont, test_handle)
+        }
+
+        function test_handle(req) {
+            async = true;
+            gradoRecibido = req.responseText;
+            console.log(gradoRecibido);
+
+        }
+
+        function getGrado() {
+            return gradoRecibido;
+        }
+
+        $.ajax({
+            method: "POST",
+            url: "http://localhost:8080",
+            success: function(result) {
+                console.log("success"); //does not print
+                console.log(result+"hola"); //does not print
+            },
+            failure: function(err) {
+                console.log("couldn't make it"); //does not print
+            }
+        });
+
+        setInterval(function() {
+                if (async) {
+                    test_button();
+                    cont = cont + 1;
+                }
+            }
+
+            , 500);
+
+    </script>
+
+</body>
+
+</html>

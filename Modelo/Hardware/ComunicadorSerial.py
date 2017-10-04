@@ -6,5 +6,6 @@ class ComunicadorSerial:
         
     
     def enviarDatos(self,valor):
-        self.arduino.write(bytes(valor))
+       # self.arduino.write(bytes(valor))
+        return None
        
