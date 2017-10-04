@@ -1,15 +1,15 @@
 limites = {'x' : [90,0,180], 'y' : [90,0,180]}
-#import ComunicadorSerial
-from threading import Thread
-
-
 
 class Cabeza(object):
     
-    def girar(self, grados, eje):
+    def girar(self, grados, coordenada, eje):
         
+        direccion = 1
+        if(coordenada < self.getCalibracion()[eje]):
+            direccion*-1
         inf = limites[eje][1]
         sup = limites[eje][2]
+        grados = grados*direccion
         angulo = grados + limites[eje][0]
         
         if(angulo > sup):
@@ -21,13 +21,12 @@ class Cabeza(object):
         #self.comunicador.enviarDatos(eje+chr(angulo))
         print("la cabeza" + str(self.id) + " giro al angulo:" + str(angulo) + " en el eje: " + eje)
 
-    def __init__(self, calibracion, p, i):
+    def __init__(self, c, p, i):
         self.id = i
-        self.puntoCalibracion = calibracion
-        #self.comunicador = ComunicadorSerial.ComunicadorSerial()
+        self.puntoCalibracion = {'x' : c[0], 'y': c[1]}
         self.posicion = p
-        self.girar(0, 'x')
-        self.girar(0, 'y')
+        self.girar(0, self.getCalibracion()['x'], 'x')
+        self.girar(0, self.getCalibracion()['y'], 'y')
        
         
         

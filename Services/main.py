@@ -16,6 +16,7 @@ fuente = cv2.FONT_HERSHEY_SIMPLEX
 textoInicio = 'Para comenzar por favor coloquese frente a la cabeza y presione C para calibrar'
 textoCalibracion = 'Cabeza'
 textoRecalibrar = "presione R para recalibrar"
+
 def reorientar(cabeza, id, punto, diametro, puntoMedio,  eventoMover):
     while True:
         x = punto[0]
@@ -27,20 +28,17 @@ def reorientar(cabeza, id, punto, diametro, puntoMedio,  eventoMover):
         
         eventoMover.wait()
         if x*y*diametroCara > 0:
-            direccionX = 1
-            direccionY = 1
-            if(x< cabeza.getCalibracion()[0]):
-                direccionX = -1
-            if(y < cabeza.getCalibracion()[1]):
-                direccionY = -1
+           
             distancia = Calculador.calcularDistancia(diametroCara/2)
-            cabeza.puntoCalibracion = Calculador.calcularPuntoCalibracion(cabeza, distancia, puntoMedio)
+            
+            c = Calculador.calcularPuntoCalibracion(cabeza, distancia, puntoMedio)
+            cabeza.puntoCalibracion['x'] = c[0] 
+            cabeza.puntoCalibracion['y'] = c[1]
+            anguloHorizontal = Calculador.CalcularOrientacion(math.fabs(x-cabeza.getCalibracion()['x']),distancia)
+            anguloVertical = Calculador.CalcularOrientacion(math.fabs(y-cabeza.getCalibracion()['y']),distancia)
         
-            anguloHorizontal = Calculador.CalcularOrientacion(math.fabs(x-cabeza.getCalibracion()[0]),distancia)
-            anguloVertical = Calculador.CalcularOrientacion(math.fabs(y-cabeza.getCalibracion()[1]),distancia)
-        
-            cabeza.girar(anguloHorizontal*direccionX, 'x')
-            cabeza.girar(anguloVertical*direccionY, 'y')
+            cabeza.girar(anguloHorizontal,x, 'x')
+            cabeza.girar(anguloVertical,y, 'y')
         eventoMover.clear()
         
 def main():
