@@ -18,7 +18,6 @@ textoCalibracion = 'Cabeza'
 textoRecalibrar = "presione R para recalibrar"
 def reorientar(cabeza, id, punto, diametro, puntoMedio,  eventoMover):
     while True:
-        #eventoCalibrar.wait()
         x = punto[0]
         y = punto[1]
         diametroCara = diametro.value
@@ -49,27 +48,18 @@ def main():
     validadorDesp = ValidadorDesplazamiento(puntoCentro)
     namedWindow("webcam")
     
-    
-   
-    procesos = [];
-    contCabezas = 0
-    c1 = None
-    c2 = None
-    c3 = None
     puntoDeteccion = Array('i', 2)
     diametro = Value('i')
-    eventoMover1 = Event()
-    eventoMover2 = Event()
-    eventoMover3 = Event()
-    
-    eventoCalibrar =Event()
-    
-    p1 = Process(target= reorientar,  args=(c1, 1,puntoDeteccion,diametro, puntoCentro, eventoMover1))
-    p2 = Process(target= reorientar,  args=(c2, 2,puntoDeteccion,diametro, puntoCentro, eventoMover2))
-    p3 = Process(target= reorientar,  args=(c3, 3,puntoDeteccion,diametro, puntoCentro, eventoMover3))
-    procesos.append(p1)
-    procesos.append(p2)
-    procesos.append(p3)
+   
+    procesos = []
+    eventos = []
+    cantCabezas = 3
+    cont= 0
+    for i in range(0, cantCabezas):
+        c = None
+        eventos.append(Event())
+        procesos.append(Process(target= reorientar,  args=(c, i,puntoDeteccion,diametro, puntoCentro, eventos[0])))
+
     while True:
         va, imagen = vc.read()
         imagen = cv2.flip(imagen, 1)
@@ -78,30 +68,18 @@ def main():
         puntoDeteccion[1] = y
         diametro.value = h 
         
-        #cv2.rectangle(imagen, (x, y), (x + w, y + h), color, 3)
         cv2.circle(imagen,(x,y),4, color, grosorFigura)
 
         if flag:
-            if(contCabezas < 3):
+            if(cont < cantCabezas):
                 cv2.putText(imagen,textoInicio,(5,15), fuente, 0.45,color,2)
                 if waitKey(1) & 0xFF == ord('c'):
-                    procesos[contCabezas].start()
-                    contCabezas += 1
-                    
-
-    
+                    procesos[cont].start()
+                    cont += 1
             else:    
                 if validadorDesp.validarDesplazamiento((x,y)):
-                    print("entro")
-                    eventoMover1.set()
-                    eventoMover2.set()
-                    eventoMover3.set()
-                                                
-                       
-
-
-
-
+                    for e in eventos:
+                        e.set()
         imshow("webcam", imagen)
        
         if waitKey(1) & 0xFF == ord('q'):
