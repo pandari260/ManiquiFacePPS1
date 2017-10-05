@@ -21,13 +21,11 @@ def test_app(environ, start_response):
         x = punto[0]
         y = punto[1]
         grados = Orientador.reorientar(x, y, diametroCara, cabeza, puntoMedio)
-        response_body = str(randint(1,20)) #ak tenes que enviar los nuemros que estan en la variable grados 
       
         status = '200 OK'
         headers = [('Content-type', 'text/plain')]
         start_response(status, headers)
-        print response_body
-        return [response_body,str(1)]
+        return [str(grados[0]),str(grados[1])]
    
 
 

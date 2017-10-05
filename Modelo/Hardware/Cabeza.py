@@ -14,13 +14,13 @@ class Cabeza(object):
         angulo = grados + limites[eje][0]
         
         if(angulo > sup):
-            print("entro en superior")
             angulo = sup
         elif(angulo < inf):
             angulo = inf
     
         #self.comunicador.enviarDatos(eje+chr(angulo))
         print("la cabeza" + str(self.id) + " giro al angulo:" + str(angulo) + " en el eje: " + eje)
+        return angulo
 
     def __init__(self, c, p, i):
         self.id = i
