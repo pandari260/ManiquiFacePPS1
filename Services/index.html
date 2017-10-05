@@ -11,10 +11,18 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
     <script type="text/javascript">
-        var cont = 1;
-
+        var grad90 = THREE.Math.degToRad(90);
+        var gradoX = 0;
+        var gradoY = 0;
         var scene = new THREE.Scene();
-        var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        var camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 10000);
+
+
+        camera.position.set(0, 30, 0);
+        camera.up = new THREE.Vector3(0, 0, 1);
+        camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+        scene.add(camera);
 
         var renderer = new THREE.WebGLRenderer();
         renderer.setSize(window.innerWidth, innerHeight);
@@ -28,7 +36,8 @@
 
             function(obj) {
                 torso = obj;
-                torso.rotation.y = 3.14
+                torso.rotation.y = grad90 + gradoY;
+                torso.rotation.x = grad90 + gradoY;
                 scene.add(obj);
             });
 
@@ -41,19 +50,13 @@
         });
         controls = new THREE.OrbitControls(camera, renderer.domElement);
 
-        camera.position.z = 3;
+
         var ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.8);
         scene.add(ambientLight);
 
+
         var update = function() {
-            var x = 1.57 / 2;
-
-            torso.rotation.x = cont * 0.0174533;
-
-            if (torso.rotation.x >= x) {
-                torso.rotation.y = 3.14;
-                torso.rotation.x = 0;
-            }
+            torso.rotation.y = 0;
 
         };
 
@@ -62,9 +65,12 @@
                     data: "msg",
                     url: 'http://localhost:8080',
                     type: 'post',
-                    success: function(response) {
-                        cont = response;
-                        console.log(response);
+                    success: function(ejeX, ejeY) {
+                        gradoX = ejeX;
+                        gradoY = ejeY;
+                        console.log(ejeX);
+                        console.log(ejeY);
+
                     },
                     failure: function(err) {
                         console.log("couldn't make it"); //does not print
@@ -74,6 +80,7 @@
             }
 
             , 500);
+
 
         var render = function() {
             renderer.render(scene, camera);
