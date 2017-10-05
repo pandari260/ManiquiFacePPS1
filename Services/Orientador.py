@@ -13,8 +13,10 @@ def reorientar(x,y,diametroCara, cabeza, puntoMedio):
         anguloHorizontal = Calculador.CalcularOrientacion(math.fabs(x-cabeza.getCalibracion()['x']),distancia)
         anguloVertical = Calculador.CalcularOrientacion(math.fabs(y-cabeza.getCalibracion()['y']),distancia)
     
-        cabeza.girar(anguloHorizontal,x, 'x')
-        cabeza.girar(anguloVertical,y, 'y')
+        gx = cabeza.girar(anguloHorizontal,x, 'x')
+        gy = cabeza.girar(anguloVertical,y, 'y')
+        return (gx,gy)
+        
 
 
        
