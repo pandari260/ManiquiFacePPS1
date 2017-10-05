@@ -38,7 +38,7 @@ def controlarRobot(cabeza, id, punto, diametro, puntoMedio,  eventoMover):
         x = punto[0]
         y = punto[1]
         diametroCara = diametro.value
-        if cabeza == None:
+        if cabeza == None and x*y*diametroCara > 0:
             posicion = Calculador.calcularPosicionCabeza(puntoCentro, (x, y), diametroCara)
             cabeza = Cabeza.Cabeza((x, y), posicion, id)
         
