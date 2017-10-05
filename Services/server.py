@@ -31,7 +31,7 @@ def test_app(environ, start_response):
         headers = [('Content-type', 'text/plain')]
         start_response(status, headers)
         print response_body
-        return [response_body]
+        return [response_body,str(1)]
     else:
         response_body = open(FILE).read()
         status = '200 OK'
@@ -52,3 +52,6 @@ def start_server(p1, c,  pt, d, p):
     print(puntoMedio)
     httpd = make_server("", p1, test_app)
     httpd.serve_forever()
+
+if __name__ == '__main__':
+    start_server(8080)
