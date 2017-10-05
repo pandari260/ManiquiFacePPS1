@@ -1,11 +1,16 @@
 
 from wsgiref.simple_server import make_server
+import Orientador
 from random import randint
-
 
 FILE = 'index.html'
 
 PORT = 8080
+cabeza = None
+punto = None
+diametro = None
+puntoMedio = None
+
 
 def test_app(environ, start_response):
     if environ['REQUEST_METHOD'] == 'POST':
@@ -15,7 +20,11 @@ def test_app(environ, start_response):
         except (TypeError, ValueError):
             request_body = "0"
         try:
-            response_body = str(randint(1,20))
+            x = punto[0]
+            y = punto[1]
+            diametroCara = diametro.value
+            grados = Orientador.reorientar(x, y, diametroCara, cabeza, puntoMedio)
+            response_body = str(randint(1,20)) #ak tenes que enviar los nuemros que estan en la variable grados 
         except:
             response_body = "error"
         status = '200 OK'
@@ -32,6 +41,14 @@ def test_app(environ, start_response):
         return [response_body]
 
 
-def start_server(p1):
+def start_server(p1, c,  pt, d, p):
+    cabeza = c
+    punto = pt
+    diametro = d
+    puntoMedio = p
+    print(diametro.value)
+    print(cabeza.id)
+    print(punto)
+    print(puntoMedio)
     httpd = make_server("", p1, test_app)
     httpd.serve_forever()
