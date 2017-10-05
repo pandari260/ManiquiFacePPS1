@@ -8,6 +8,8 @@ import numpy as np
 import Modelo.Hardware.Cabeza as Cabeza
 from multiprocessing import Process, Array, Value, Event
 import multiprocessing
+import Orientador
+import server
 
 puntoCentro = (320,240)
 color = (0,255,0)
@@ -16,8 +18,18 @@ fuente = cv2.FONT_HERSHEY_SIMPLEX
 textoInicio = 'Para comenzar por favor coloquese frente a la cabeza y presione C para calibrar'
 textoCalibracion = 'Cabeza'
 textoRecalibrar = "presione R para recalibrar"
+PORT = 8080
 
-def reorientar(cabeza, id, punto, diametro, puntoMedio,  eventoMover):
+def controlarThreejs(cabeza, id, punto, diametro, puntoMedio):
+    x = punto[0]
+    y = punto[1]
+    diametroCara = diametro.value
+    posicion = Calculador.calcularPosicionCabeza(puntoCentro, (x, y), diametroCara)
+    cabeza = Cabeza.Cabeza((x, y), posicion, id)
+    server.start_server(PORT, cabeza, punto, diametro, puntoMedio)
+    
+
+def controlarRobot(cabeza, id, punto, diametro, puntoMedio,  eventoMover):
     while True:
         x = punto[0]
         y = punto[1]
@@ -27,18 +39,7 @@ def reorientar(cabeza, id, punto, diametro, puntoMedio,  eventoMover):
             cabeza = Cabeza.Cabeza((x, y), posicion, id)
         
         eventoMover.wait()
-        if x*y*diametroCara > 0:
-           
-            distancia = Calculador.calcularDistancia(diametroCara/2)
-            
-            c = Calculador.calcularPuntoCalibracion(cabeza, distancia, puntoMedio)
-            cabeza.puntoCalibracion['x'] = c[0] 
-            cabeza.puntoCalibracion['y'] = c[1]
-            anguloHorizontal = Calculador.CalcularOrientacion(math.fabs(x-cabeza.getCalibracion()['x']),distancia)
-            anguloVertical = Calculador.CalcularOrientacion(math.fabs(y-cabeza.getCalibracion()['y']),distancia)
-        
-            cabeza.girar(anguloHorizontal,x, 'x')
-            cabeza.girar(anguloVertical,y, 'y')
+        Orientador.reorientar(x, y, diametroCara, cabeza, puntoMedio)
         eventoMover.clear()
         
 def main():
@@ -52,11 +53,14 @@ def main():
     procesos = []
     eventos = []
     cantCabezas = 3
+    cantCabezasWeb = 1
     cont= 0
     for i in range(0, cantCabezas):
         c = None
         eventos.append(Event())
-        procesos.append(Process(target= reorientar,  args=(c, i,puntoDeteccion,diametro, puntoCentro, eventos[0])))
+        procesos.append(Process(target= controlarRobot,  args=(c, i,puntoDeteccion,diametro, puntoCentro, eventos[0])))
+    cabezaWeb = None
+    procesos.append(Process(target= controlarThreejs, args = (cabezaWeb, 3, puntoDeteccion, diametro, puntoCentro)))
 
     while True:
         va, imagen = vc.read()
@@ -69,7 +73,7 @@ def main():
         cv2.circle(imagen,(x,y),4, color, grosorFigura)
 
         if flag:
-            if(cont < cantCabezas):
+            if(cont < cantCabezas + cantCabezasWeb ):#primero se calibran las cabezas
                 cv2.putText(imagen,textoInicio,(5,15), fuente, 0.45,color,2)
                 if waitKey(1) & 0xFF == ord('c'):
                     procesos[cont].start()
