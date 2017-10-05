@@ -8,7 +8,7 @@ import numpy as np
 import Modelo.Hardware.Cabeza as Cabeza
 from multiprocessing import Process, Array, Value, Event
 import multiprocessing
-
+import Orientador
 puntoCentro = (320,240)
 color = (0,255,0)
 grosorFigura = 5
@@ -17,7 +17,7 @@ textoInicio = 'Para comenzar por favor coloquese frente a la cabeza y presione C
 textoCalibracion = 'Cabeza'
 textoRecalibrar = "presione R para recalibrar"
 
-def reorientar(cabeza, id, punto, diametro, puntoMedio,  eventoMover):
+def controlarRobot(cabeza, id, punto, diametro, puntoMedio,  eventoMover):
     while True:
         x = punto[0]
         y = punto[1]
@@ -27,18 +27,7 @@ def reorientar(cabeza, id, punto, diametro, puntoMedio,  eventoMover):
             cabeza = Cabeza.Cabeza((x, y), posicion, id)
         
         eventoMover.wait()
-        if x*y*diametroCara > 0:
-           
-            distancia = Calculador.calcularDistancia(diametroCara/2)
-            
-            c = Calculador.calcularPuntoCalibracion(cabeza, distancia, puntoMedio)
-            cabeza.puntoCalibracion['x'] = c[0] 
-            cabeza.puntoCalibracion['y'] = c[1]
-            anguloHorizontal = Calculador.CalcularOrientacion(math.fabs(x-cabeza.getCalibracion()['x']),distancia)
-            anguloVertical = Calculador.CalcularOrientacion(math.fabs(y-cabeza.getCalibracion()['y']),distancia)
-        
-            cabeza.girar(anguloHorizontal,x, 'x')
-            cabeza.girar(anguloVertical,y, 'y')
+        Orientador.reorientar(x, y, diametroCara, cabeza, puntoMedio)
         eventoMover.clear()
         
 def main():
@@ -56,7 +45,7 @@ def main():
     for i in range(0, cantCabezas):
         c = None
         eventos.append(Event())
-        procesos.append(Process(target= reorientar,  args=(c, i,puntoDeteccion,diametro, puntoCentro, eventos[0])))
+        procesos.append(Process(target= controlarRobot,  args=(c, i,puntoDeteccion,diametro, puntoCentro, eventos[0])))
 
     while True:
         va, imagen = vc.read()
