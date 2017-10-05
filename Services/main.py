@@ -26,7 +26,11 @@ def controlarThreejs(cabeza, id, punto, diametro, puntoMedio):
     diametroCara = diametro.value
     posicion = Calculador.calcularPosicionCabeza(puntoCentro, (x, y), diametroCara)
     cabeza = Cabeza.Cabeza((x, y), posicion, id)
-    server.start_server(PORT, cabeza, punto, diametro, puntoMedio)
+    server.cabeza = cabeza
+    server.diametro = diametro
+    server.punto = punto
+    server.puntoMedio = puntoMedio
+    server.start_server()
     
 
 def controlarRobot(cabeza, id, punto, diametro, puntoMedio,  eventoMover):
