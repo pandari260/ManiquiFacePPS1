@@ -10,8 +10,11 @@ from multiprocessing import Process, Array, Value, Event
 import multiprocessing
 import Orientador
 import server
+from time import sleep
 
-puntoCentro = (320,240)
+ancho = 320
+alto = 240
+puntoCentro = (ancho/2,alto/2)
 color = (0,255,0)
 grosorFigura = 5
 fuente = cv2.FONT_HERSHEY_SIMPLEX
@@ -48,6 +51,8 @@ def controlarRobot(cabeza, id, punto, diametro, puntoMedio,  eventoMover):
         
 def main():
     vc = VideoCapture(0)
+    vc.set(cv2.CAP_PROP_FRAME_WIDTH, ancho)
+    vc.set(cv2.CAP_PROP_FRAME_HEIGHT, alto)
     validadorDesp = ValidadorDesplazamiento(puntoCentro)
     namedWindow("webcam")
     
@@ -65,8 +70,8 @@ def main():
         procesos.append(Process(target= controlarRobot,  args=(c, i,puntoDeteccion,diametro, puntoCentro, eventos[0])))
     cabezaWeb = None
     procesos.append(Process(target= controlarThreejs, args = (cabezaWeb, 3, puntoDeteccion, diametro, puntoCentro)))
-
     while True:
+        
         va, imagen = vc.read()
         imagen = cv2.flip(imagen, 1)
         flag,x,y,w,h = Reconocedor.detectarCara(imagen)#bool si se encontro cara, posicion (x,y), ancho y alto
@@ -87,6 +92,7 @@ def main():
                     for e in eventos:
                         e.set()
         imshow("webcam", imagen)
+        sleep(0.25)
        
         if waitKey(1) & 0xFF == ord('q'):
             break;

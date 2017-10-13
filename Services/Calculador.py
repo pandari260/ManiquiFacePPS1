@@ -1,8 +1,8 @@
 import math
 
-pxAmplitud = 640
+pxAmplitud = 320
 cmPropInver = 100.0
-pxPropInver = 50.0
+pxPropInver = 25.0
 
 
 

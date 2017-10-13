@@ -2,7 +2,7 @@ import math
 class ValidadorDesplazamiento(object):
    
     def __init__(self, ubicacion):
-        self.proporsion = 20
+        self.proporsion = 10
         self.ubiActual = ubicacion
         #no tendria que haver un para la  y otro para la y?
         
