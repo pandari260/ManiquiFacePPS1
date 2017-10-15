@@ -2,6 +2,8 @@ from cv2 import *
 import cv2
 import numpy as np
 
+limite = 10
+
 class RastreadorFacial(object):
 
 
@@ -20,7 +22,16 @@ class RastreadorFacial(object):
         mask = cv2.inRange(self.hsv_roi, np.array((0., 60., 32.)), np.array((180., 255., 255.)))
         self.roi_hist = cv2.calcHist([self.hsv_roi], [0], mask, [180], [0, 180])
         cv2.normalize(self.roi_hist, self.roi_hist, 0, 255, cv2.NORM_MINMAX)
-        self.term_crit = (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 1)
+        self.term_crit = (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, limite, 1)
+    
+    def rastrear(self, imagen):
+        hsv = cv2.cvtColor(imagen, cv2.COLOR_BGR2HSV)
+        dst = cv2.calcBackProject([hsv], [0], self.getHist(), [0, 180], 1)
+        ret, track_window = cv2.meanShift(dst, self.getTracker(), self.getCriterio())
+        x, y, w, h = track_window
+        
+        return ret < limite, x,y,w,h
+        
 
 
     def getImagen(self):

@@ -11,6 +11,7 @@ import multiprocessing
 import Orientador
 import server
 from time import sleep
+import RastreadorFacial
 
 ancho = 320
 alto = 240
@@ -64,24 +65,43 @@ def main():
     cantCabezas = 3
     cantCabezasWeb = 1
     cont= 0
+    rastreadorCara = None
     for i in range(0, cantCabezas):
         c = None
         eventos.append(Event())
         procesos.append(Process(target= controlarRobot,  args=(c, i,puntoDeteccion,diametro, puntoCentro, eventos[0])))
     cabezaWeb = None
     procesos.append(Process(target= controlarThreejs, args = (cabezaWeb, 3, puntoDeteccion, diametro, puntoCentro)))
+    seDebeUsarMeanshift = False
+    seIdentificoBlob = False
+    seEncontroCara = False
     while True:
         
         va, imagen = vc.read()
         imagen = cv2.flip(imagen, 1)
-        flag,x,y,w,h = Reconocedor.detectarCara(imagen)#bool si se encontro cara, posicion (x,y), ancho y alto
+        
+        if(not seDebeUsarMeanshift):
+            #print("se esta identificando")
+            seEncontroCara,x,y,w,h = Reconocedor.detectarCara(imagen)#bool si se encontro cara, posicion (x,y), ancho y alto
+            seDebeUsarMeanshift = seEncontroCara
+        else:
+            if not seIdentificoBlob:
+                rastreadorCara = RastreadorFacial.RastreadorFacial(imagen, (x, y, w, h))
+                rastreadorCara.identificarBlob()
+                seIdentificoBlob = True
+            else:
+                #print("se esta rastreando")
+                seEncontroCara, x,y,w,h = rastreadorCara.rastrear(imagen)   
+                if(not seEncontroCara):
+                    seDebeUsarMeanshift = False
+                    seIdentificoBlob = False
+            cv2.circle(imagen,(x,y),4, color, grosorFigura)
+        
         puntoDeteccion[0] = x
         puntoDeteccion[1] = y
         diametro.value = h 
-        
-        cv2.circle(imagen,(x,y),4, color, grosorFigura)
 
-        if flag:
+        if seEncontroCara:
             if(cont < cantCabezas + cantCabezasWeb ):#primero se calibran las cabezas
                 cv2.putText(imagen,textoInicio,(5,15), fuente, 0.45,color,2)
                 if waitKey(1) & 0xFF == ord('c'):
@@ -91,7 +111,7 @@ def main():
                 if validadorDesp.validarDesplazamiento((x,y)):
                     for e in eventos:
                         e.set()
-        imshow("webcam", imagen)
+            imshow("webcam", imagen)
         sleep(0.25)
        
         if waitKey(1) & 0xFF == ord('q'):
