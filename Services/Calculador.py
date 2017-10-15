@@ -27,6 +27,8 @@ def calcularDistancia(px):
 
 def calcularPosicionCabeza(puntoCentro, posicion, diametro ):
     d = calcularDistancia(diametro/2)
+    
+ 
     x = calcularDesplazamiento(posicion[0], d) - calcularDesplazamiento(puntoCentro[0], d)
     y = calcularDesplazamiento(posicion[1], d) - calcularDesplazamiento(puntoCentro[1], d)
     return (x,y)

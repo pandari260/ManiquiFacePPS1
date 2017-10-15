@@ -44,6 +44,7 @@ def controlarRobot(cabeza, id, punto, diametro, puntoMedio,  eventoMover):
         diametroCara = diametro.value
         if cabeza == None and x*y*diametroCara > 0:
             posicion = Calculador.calcularPosicionCabeza(puntoCentro, (x, y), diametroCara)
+
             cabeza = Cabeza.Cabeza((x, y), posicion, id)
         
         eventoMover.wait()
@@ -76,9 +77,11 @@ def main():
     seIdentificoBlob = False
     seEncontroCara = False
     while True:
-        
+
         va, imagen = vc.read()
         imagen = cv2.flip(imagen, 1)
+        cv2.circle(imagen,puntoCentro,4, color, grosorFigura)
+
         
         if(not seDebeUsarMeanshift):
             #print("se esta identificando")
@@ -95,10 +98,11 @@ def main():
                 if(not seEncontroCara):
                     seDebeUsarMeanshift = False
                     seIdentificoBlob = False
-            cv2.circle(imagen,(x,y),4, color, grosorFigura)
+            cv2.circle(imagen,(x+w/2,y+h/2),4, color, grosorFigura)
         
-        puntoDeteccion[0] = x
-        puntoDeteccion[1] = y
+       
+        puntoDeteccion[0] = x+w/2
+        puntoDeteccion[1] = y+h/2
         diametro.value = h 
 
         if seEncontroCara:
