@@ -11,7 +11,7 @@ import multiprocessing
 import Orientador
 import server
 from time import sleep
-import RastreadorFacial
+from DectectorDeObjetos import DetectorDeObjetos
 
 ancho = 320
 alto = 240
@@ -52,6 +52,7 @@ def controlarRobot(cabeza, id, punto, diametro, puntoMedio,  eventoMover):
         eventoMover.clear()
         
 def main():
+    detectorObjetos = DetectorDeObjetos('cascade.xml')
     vc = VideoCapture(0)
     vc.set(cv2.CAP_PROP_FRAME_WIDTH, ancho)
     vc.set(cv2.CAP_PROP_FRAME_HEIGHT, alto)
@@ -66,45 +67,29 @@ def main():
     cantCabezas = 3
     cantCabezasWeb = 1
     cont= 0
-    rastreadorCara = None
     for i in range(0, cantCabezas):
         c = None
         eventos.append(Event())
         procesos.append(Process(target= controlarRobot,  args=(c, i,puntoDeteccion,diametro, puntoCentro, eventos[0])))
     cabezaWeb = None
     procesos.append(Process(target= controlarThreejs, args = (cabezaWeb, 3, puntoDeteccion, diametro, puntoCentro)))
-    seDebeUsarMeanshift = False
-    seIdentificoBlob = False
-    seEncontroCara = False
+   
     while True:
 
         va, imagen = vc.read()
         imagen = cv2.flip(imagen, 1)
         cv2.circle(imagen,puntoCentro,4, color, grosorFigura)
 
-        
-        if(not seDebeUsarMeanshift):
-            #print("se esta identificando")
-            seEncontroCara,x,y,w,h = Reconocedor.detectarCara(imagen)#bool si se encontro cara, posicion (x,y), ancho y alto
-            seDebeUsarMeanshift = seEncontroCara
-        else:
-            if not seIdentificoBlob:
-                rastreadorCara = RastreadorFacial.RastreadorFacial(imagen, (x, y, w, h))
-                rastreadorCara.identificarBlob()
-                seIdentificoBlob = True
-            else:
-                #print("se esta rastreando")
-                seEncontroCara, x,y,w,h = rastreadorCara.rastrear(imagen)   
-                if(not seEncontroCara):
-                    seDebeUsarMeanshift = False
-                    seIdentificoBlob = False
-            cv2.circle(imagen,(x+w/2,y+h/2),4, color, grosorFigura)
+        seEncontroCara, x,y,w,h = detectorObjetos.detectar(imagen)
+       
+        cv2.rectangle(imagen,(x,y),(x+w,y+h), color, grosorFigura)
+        cv2.rectangle(imagen,(x+w,y),(x+2*w,y+h), color, grosorFigura)
+
         
        
         puntoDeteccion[0] = x+w/2
         puntoDeteccion[1] = y+h/2
         diametro.value = h 
-
         if seEncontroCara:
             if(cont < cantCabezas + cantCabezasWeb ):#primero se calibran las cabezas
                 cv2.putText(imagen,textoInicio,(5,15), fuente, 0.45,color,2)
@@ -116,7 +101,7 @@ def main():
                     for e in eventos:
                         e.set()
             imshow("webcam", imagen)
-        sleep(0.25)
+        sleep(0.1)
        
         if waitKey(1) & 0xFF == ord('q'):
             break;
