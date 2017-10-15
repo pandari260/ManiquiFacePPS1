@@ -23,7 +23,7 @@ def test_app(environ, start_response):
 
         x = punto[0]
         y = punto[1]
-        posicionLateral, posicionVertical = calcularPosicionCabeza(x,y,diametroCara)#estos valores te dicen la pocicion de la cara con respsto al punto medio (320,240)
+        posicionLateral, posicionVertical = calcularPosicionCabeza((160,120)(x,y),diametroCara)#estos valores te dicen la pocicion de la cara con respsto al punto medio (320,240)
         distanciaDeLaCara = Calculador.calcularDistancia(diametroCara/2)#este valor te dice que tan lejos esta la cara detectada
         status = '200 OK'
         headers = [('Content-type', 'text/plain')]
