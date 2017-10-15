@@ -2,6 +2,8 @@
 from wsgiref.simple_server import make_server
 import Orientador
 from random import randint
+from Services import Calculador
+from Services.Calculador import calcularPosicionCabeza
 
 FILE = 'index.html'
 
@@ -13,6 +15,7 @@ puntoMedio = None
 
 
 def test_app(environ, start_response):
+    
     if environ['REQUEST_METHOD'] == 'POST':
        
         print(diametro.value)
@@ -20,12 +23,12 @@ def test_app(environ, start_response):
 
         x = punto[0]
         y = punto[1]
-        grados = Orientador.reorientar(x, y, diametroCara, cabeza, puntoMedio)
-      
+        posicionLateral, posicionVertical = calcularPosicionCabeza(x,y,diametroCara)#estos valores te dicen la pocicion de la cara con respsto al punto medio (320,240)
+        distanciaDeLaCara = Calculador.calcularDistancia(diametroCara/2)#este valor te dice que tan lejos esta la cara detectada
         status = '200 OK'
         headers = [('Content-type', 'text/plain')]
         start_response(status, headers)
-        return [str(grados[0]),str(grados[1])]
+        #return [str(grados[0]),str(grados[1])]
    
 
 

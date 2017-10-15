@@ -7,7 +7,6 @@ class Cabeza(object):
         direccion = 1
         if(coordenada < self.getCalibracion()[eje]):
             direccion = direccion*-1
-            print("fue menor")
         inf = limites[eje][1]
         sup = limites[eje][2]
         grados = grados*direccion
