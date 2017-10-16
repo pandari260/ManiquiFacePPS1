@@ -24,13 +24,14 @@ def test_app(environ, start_response):
         y = punto[1]
         posicionLateral =0
         posicionVertical = 0
+        distanciaDeLaCara = 0
         if(x*y*diametroCara != 0):
             posicionLateral, posicionVertical = Calculador.calcularPosicionCabeza((160,120),(x,y),diametroCara)#estos valores te dicen la pocicion de la cara con respsto al punto medio (320,240)
             distanciaDeLaCara = Calculador.calcularDistancia(diametroCara/2)#este valor te dice que tan lejos esta la cara detectada
         status = '200 OK'
         headers = [('Content-type', 'text/plain')]
         start_response(status, headers)
-        return [str(posicionLateral),","+str(posicionVertical)]
+        return [str(posicionLateral),","+str(posicionVertical),","+str(distanciaDeLaCara)]
 
 
 
