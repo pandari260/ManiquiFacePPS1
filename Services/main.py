@@ -59,8 +59,8 @@ def main():
     seEncontroPalma = False
     seEncontroPuno = False
     vc = VideoCapture(0)
-    vc.set(cv2.cv.CV_CAP_PROP_FRAME_WIDTH, ancho)
-    vc.set(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT, alto)
+    vc.set(cv2.CAP_PROP_FRAME_WIDTH, ancho)
+    vc.set(cv2.CAP_PROP_FRAME_HEIGHT, alto)
     validadorDesp = ValidadorDesplazamiento(puntoCentro)
     namedWindow("webcam")
     
