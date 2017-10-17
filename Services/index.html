@@ -11,56 +11,36 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
     <script type="text/javascript">
-        var grad90 = THREE.Math.degToRad(90);
+        var loader = new THREE.ObjectLoader();
+        var torso = null;
         var gradoX = 0;
         var gradoY = 0;
         var gradoZ = 0;
         var gX = "";
         var gY = "";
         var gZ = "";
-
         var scene = new THREE.Scene();
+        var renderer = new THREE.WebGLRenderer();
+        var cont = 0;
+
 
         camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 10000);
+        //camera.position.set(-80, 0, -80);
+        camera.position.set(0, 30, -30);
 
-        camera.position.set(-80, 0, -80);
         camera.up = new THREE.Vector3(0, 1, 0);
         camera.lookAt(new THREE.Vector3(0, 0, 0));
-
         scene.add(camera);
 
-        var renderer = new THREE.WebGLRenderer();
         renderer.setSize(window.innerWidth, innerHeight);
         document.body.appendChild(renderer.domElement);
-
-        var loader = new THREE.ObjectLoader();
-        var torso = null;
-        loader.load(
-            "models/skull.json",
-
-            function(obj) {
-                torso = obj;
-                scene.add(torso);
-            });
-
-        window.addEventListener('resize', function() {
-            var width = window.innerWidth;
-            var height = window.innerHeight;
-            renderer.setSize(width, height);
-            camera.aspect = width / height;
-            camera.updateProjectionMatrix();
+        loader.load("models/skull.json", function(obj) {
+            torso = obj;
+            scene.add(torso);
         });
+        window.addEventListener('resize', controlarCamara);
         controls = new THREE.OrbitControls(camera, renderer.domElement);
-        //scene.add(mesh)
-        var ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.8);
-        scene.add(ambientLight);
 
-
-        var update = function() {
-            torso.lookAt(new THREE.Vector3(gradoX*0.2, gradoY*0.2, gradoZ*0.2));
-
-        };
-        var cont = 0;
         setInterval(function() {
                 $.ajax({
                     data: "msg",
@@ -68,33 +48,8 @@
                     type: 'post',
                     success: function(response) {
                         if (validarPuntoCero(response) != 0) {
-                            for (var i = 0; i < response.length; i++) {
-                                if (response[i] == ",") {
-                                    cont++;
-                                } else {
-                                    if (cont == 0) {
-                                        gX += response[i];
-                                    } else {
-                                        if (cont == 1) {
-                                            gY += response[i];
-                                        } else {
-                                            gZ += response[i];
-
-                                        }
-                                    }
-                                }
-                            }
-                            cont = 0;
-                            gradoX = parseFloat(gX) * 0.1;
-                            gradoY = parseFloat(gY) * 0.1;
-                            gradoZ = parseFloat(gZ) * 0.1;
-
-                            console.log("valoor de x" + gradoX);
-                            console.log("valor de y" + gradoY);
-                            console.log("valor de z" + gradoZ);
-                            gX = "";
-                            gY = "";
-                            gZ = "";
+                            procesarResponse(response);
+                            actualizarVariables();
                         }
                     },
                     failure: function(err) {
@@ -110,7 +65,55 @@
             var caso = "0,0,0"
             return response.localeCompare(caso);
         }
-         
+
+        function controlarCamara() {
+            var width = window.innerWidth;
+            var height = window.innerHeight;
+            renderer.setSize(width, height);
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+            var ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.8);
+            scene.add(ambientLight);
+        }
+
+        function procesarResponse(response) {
+            for (var i = 0; i < response.length; i++) {
+                if (response[i] == ",") {
+                    cont++;
+                } else {
+                    if (cont == 0) {
+                        gX += response[i];
+                    } else {
+                        if (cont == 1) {
+                            gY += response[i];
+                        } else {
+                            gZ += response[i];
+
+                        }
+                    }
+                }
+            }
+        }
+
+        function actualizarVariables() {
+
+            cont = 0;
+            gradoX = parseFloat(gX) * 0.4;
+            gradoY = parseFloat(gY) * 0.4;
+            gradoZ = parseFloat(gZ);
+
+            console.log("valoor de x " + gradoX);
+            console.log("valor de y " + gradoY);
+            console.log("valor de z " + gradoZ);
+            gX = "";
+            gY = "";
+            gZ = "";
+        }
+  
+        var update = function() {
+            torso.lookAt(new THREE.Vector3(gradoX, gradoY, gradoZ));
+
+        };
 
         var render = function() {
             renderer.render(scene, camera);
@@ -119,7 +122,6 @@
 
         var iniciar = function() {
             requestAnimationFrame(iniciar);
-
             update();
             render();
         };
