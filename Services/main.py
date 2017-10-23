@@ -64,9 +64,9 @@ def main():
     detectorPuno = ReconocerdorFacial('fist.xml')
     seEncontroPalma = False
     seEncontroPuno = False
-    vc = VideoCapture(0)
-    vc.set(cv2.cv.CV_CAP_PROP_FRAME_WIDTH, ancho)
-    vc.set(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT, alto)
+    vc = VideoCapture(1)
+    vc.set(cv2.CAP_PROP_FRAME_WIDTH, ancho)
+    vc.set(cv2.CAP_PROP_FRAME_HEIGHT, alto)
     validadorDesp = ValidadorDesplazamiento(puntoCentro)
     namedWindow("webcam")
     
@@ -92,8 +92,8 @@ def main():
 
         seEncontroCara, x,y,w,h = detectorCara.detectar(imagen)
        
-        #cv2.rectangle(imagen,(x,y),(x+w,y+h), color, grosorFigura)
-        cv2.rectangle(imagen,(x+w,y),(x+2*w,y+h), color, grosorFigura)
+        cv2.rectangle(imagen,(320,120),(320,120), color, grosorFigura)
+        
 
         
        
@@ -102,7 +102,7 @@ def main():
         diametro.value = h 
         if seEncontroCara:
             if(cont < cantCabezas + cantCabezasWeb ):#primero se calibran las cabezas
-                cv2.putText(imagen,textoInicio,(5,15), fuente, 0.45,color,2)
+                cv2.rectangle(imagen,(x+w,y),(x+2*w,y+h), color, grosorFigura)
                 recorte = imagen[y:y+h, x+w:x+2*w]
                 if not seEncontroPalma:
                     seEncontroPalma, xm,ym,wm, hm = detectorPalma.detectar(recorte)
