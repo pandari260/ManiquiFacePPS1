@@ -15,7 +15,8 @@ def reorientar(x,y,diametroCara, cabeza, puntoMedio):
     
         gx = cabeza.girar(anguloHorizontal,x, 'x')
         gy = cabeza.girar(anguloVertical,y, 'y')
-        return (gx,gy)
+        return gx,gy
+    return 0,0
         
 
 
