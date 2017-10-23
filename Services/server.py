@@ -2,7 +2,7 @@
 from wsgiref.simple_server import make_server
 import Orientador
 from random import randint
-from Services import Calculador
+import Calculador
 
 FILE = 'index.html'
 
