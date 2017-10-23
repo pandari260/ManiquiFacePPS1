@@ -4,15 +4,15 @@ from ValidadorDesplazamiento import ValidadorDesplazamiento
 import Calculador
 import math
 import numpy as np
-import Modelo.Hardware.Cabeza as Cabeza
+import Cabeza as Cabeza
 from multiprocessing import Process, Array, Value, Event
 import multiprocessing
 import Orientador
 import server
 from time import sleep
 from DectectorDeObjetos import DetectorDeObjetos
-from Services import ReconocedorFacial
 from ReconocedorFacial import ReconocerdorFacial
+from Comunicador import Comunicador
 
 ancho = 320
 alto = 240
@@ -39,6 +39,7 @@ def controlarThreejs(cabeza, id, punto, diametro, puntoMedio):
     
 
 def controlarRobot(cabeza, id, punto, diametro, puntoMedio,  eventoMover):
+    comunicador = Comunicador(33,35)    
     while True:
         x = punto[0]
         y = punto[1]
@@ -47,9 +48,14 @@ def controlarRobot(cabeza, id, punto, diametro, puntoMedio,  eventoMover):
             posicion = Calculador.calcularPosicionCabeza(puntoCentro, (x, y), diametroCara)
 
             cabeza = Cabeza.Cabeza((x, y), posicion, id)
+            
+
+
         
         eventoMover.wait()
-        Orientador.reorientar(x, y, diametroCara, cabeza, puntoMedio)
+        gx, gy = Orientador.reorientar(x, y, diametroCara, cabeza, puntoMedio)
+        
+        comunicador.enviarOrientacion(gx,gy)
         eventoMover.clear()
         
 def main():
@@ -69,8 +75,8 @@ def main():
    
     procesos = []
     eventos = []
-    cantCabezas = 0
-    cantCabezasWeb = 1
+    cantCabezas = 1
+    cantCabezasWeb = 0
     cont= 0
     for i in range(0, cantCabezas):
         c = None
