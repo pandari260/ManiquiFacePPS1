@@ -39,7 +39,8 @@ def controlarThreejs(cabeza, id, punto, diametro, puntoMedio):
     
 
 def controlarRobot(cabeza, id, punto, diametro, puntoMedio,  eventoMover):
-    comunicador = Comunicador(33,35)    
+    comunicador = Comunicador(35,35)
+    prede = None    
     while True:
         x = punto[0]
         y = punto[1]
@@ -54,8 +55,29 @@ def controlarRobot(cabeza, id, punto, diametro, puntoMedio,  eventoMover):
         
         eventoMover.wait()
         gx, gy = Orientador.reorientar(x, y, diametroCara, cabeza, puntoMedio)
-        
-        comunicador.enviarOrientacion(gx,gy)
+        if(prede != None and gx!=0):
+		if(abs(prede-gx)>=5 ):
+			comunicador.iniciarOrientacion()
+			resta = prede - gx
+		    	if(resta == 5):
+				comunicador.enviarOrientacion(gx,90)
+			elif(gx > prede):
+				while(gx > prede):
+					print("predecesor:"+str(prede))
+					print("X:"+str(gx))
+					prede +=5
+					comunicador.enviarOrientacion(prede,90)
+			elif(gx < prede):
+				while(gx < prede):
+					print("predecesor2:"+str(prede))
+					print("X2:"+str(gx))
+					prede -=5
+					comunicador.enviarOrientacion(prede,90)
+			prede = gx
+		else:
+			comunicador.detenerOrientacion()
+	if(prede == None):
+		prede = gx
         eventoMover.clear()
         
 def main():
@@ -64,9 +86,9 @@ def main():
     detectorPuno = ReconocerdorFacial('fist.xml')
     seEncontroPalma = False
     seEncontroPuno = False
-    vc = VideoCapture(1)
-    vc.set(cv2.CAP_PROP_FRAME_WIDTH, ancho)
-    vc.set(cv2.CAP_PROP_FRAME_HEIGHT, alto)
+    vc = VideoCapture(0)
+    vc.set(cv2.cv.CV_CAP_PROP_FRAME_WIDTH, ancho)
+    vc.set(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT, alto)
     validadorDesp = ValidadorDesplazamiento(puntoCentro)
     namedWindow("webcam")
     
