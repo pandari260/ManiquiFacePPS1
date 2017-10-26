@@ -1,28 +1,28 @@
-from cv2 import *
-import cv2
-from ValidadorDesplazamiento import ValidadorDesplazamiento
-import Calculador
-import math
-import numpy as np
-import Cabeza as Cabeza
-from multiprocessing import Process, Array, Value, Event
-import multiprocessing
-import Orientador
-import server
-from time import sleep
-from DectectorDeObjetos import DetectorDeObjetos
-from ReconocedorFacial import ReconocerdorFacial
-from Comunicador import Comunicador
-
-ancho = 320
-alto = 240
-puntoCentro = (ancho/2,alto/2)
-color = (0,255,0)
-grosorFigura = 3
-fuente = cv2.FONT_HERSHEY_SIMPLEX
-textoInicio = ' coloque la palma de la mano en el recuadro para calibrar'
-textoCalibracion = 'Cabeza'
-textoRecalibrar = "presione R para recalibrar"
+from cv2 import * 
+import cv2 
+from ValidadorDesplazamiento import ValidadorDesplazamiento 
+import Calculador 
+import math 
+import numpy as np 
+import Cabeza as Cabeza 
+from multiprocessing import Process, Array, Value, Event 
+import multiprocessing 
+import Orientador 
+import server 
+from time import sleep 
+from DectectorDeObjetos import DetectorDeObjetos 
+from ReconocedorFacial import ReconocerdorFacial 
+from Comunicador import Comunicador 
+import time 
+ancho = 320 
+alto = 240 
+puntoCentro = (ancho/2,alto/2) 
+color = (0,255,0) 
+grosorFigura = 3 
+fuente = cv2.FONT_HERSHEY_SIMPLEX 
+textoInicio = ' coloque la palma de la mano en el recuadro para calibrar' 
+textoCalibracion = 'Cabeza' 
+textoRecalibrar = "presione R para recalibrar" 
 PORT = 8080
 
 def controlarThreejs(cabeza, id, punto, diametro, puntoMedio):
@@ -39,8 +39,9 @@ def controlarThreejs(cabeza, id, punto, diametro, puntoMedio):
     
 
 def controlarRobot(cabeza, id, punto, diametro, puntoMedio,  eventoMover):
-    comunicador = Comunicador(35,35)
-    prede = None    
+    comunicador = Comunicador(35,33)
+    predeV = None
+    predeH = None   
     while True:
         x = punto[0]
         y = punto[1]
@@ -50,34 +51,33 @@ def controlarRobot(cabeza, id, punto, diametro, puntoMedio,  eventoMover):
 
             cabeza = Cabeza.Cabeza((x, y), posicion, id)
             
-
-
-        
         eventoMover.wait()
         gx, gy = Orientador.reorientar(x, y, diametroCara, cabeza, puntoMedio)
-        if(prede != None and gx!=0):
-		if(abs(prede-gx)>=5 ):
+	
+        if(predeH != None and gx!=0 and gy!=0):
+		if(abs(predeH-gx)>=5 or abs(predeV-gy)>=2):
 			comunicador.iniciarOrientacion()
-			resta = prede - gx
-		    	if(resta == 5):
-				comunicador.enviarOrientacion(gx,90)
-			elif(gx > prede):
-				while(gx > prede):
-					print("predecesor:"+str(prede))
+		   	if(gx > predeH):
+				while(gx > predeH):
+					print("predecesor:"+str(predeH))
 					print("X:"+str(gx))
-					prede +=5
-					comunicador.enviarOrientacion(prede,90)
-			elif(gx < prede):
-				while(gx < prede):
-					print("predecesor2:"+str(prede))
+					predeH +=5
+					comunicador.enviarOrientacion(predeH,gy)
+
+			elif(gx < predeH):
+				while(gx < predeH):
+					print("predecesor2:"+str(predeH))
 					print("X2:"+str(gx))
-					prede -=5
-					comunicador.enviarOrientacion(prede,90)
-			prede = gx
-		else:
-			comunicador.detenerOrientacion()
-	if(prede == None):
-		prede = gx
+					predeH -=5
+					comunicador.enviarOrientacion(predeH,gy)
+			predeH = gx
+			predeV = gy
+			comunicador.enviarOrientacion(predeH,gy)
+		comunicador.detenerOrientacion()
+
+	if(predeH == None and predeV == None):
+		predeH = gx
+		predeV = gy
         eventoMover.clear()
         
 def main():
@@ -106,47 +106,48 @@ def main():
         procesos.append(Process(target= controlarRobot,  args=(c, i,puntoDeteccion,diametro, puntoCentro, eventos[0])))
     cabezaWeb = None
     procesos.append(Process(target= controlarThreejs, args = (cabezaWeb, 3, puntoDeteccion, diametro, puntoCentro)))
-   
+
     while True:
 
-        va, imagen = vc.read()
-        imagen = cv2.flip(imagen, 1)
+		va, imagen = vc.read()
+		imagen = cv2.flip(imagen, 1)
 
-        seEncontroCara, x,y,w,h = detectorCara.detectar(imagen)
-       
-        cv2.rectangle(imagen,(320,120),(320,120), color, grosorFigura)
-        
+		seEncontroCara, x,y,w,h = detectorCara.detectar(imagen)
+	       
+		cv2.rectangle(imagen,(320,120),(320,120), color, grosorFigura)
+		
 
-        
-       
-        puntoDeteccion[0] = x+w/2
-        puntoDeteccion[1] = y+h/2
-        diametro.value = h 
-        if seEncontroCara:
-            if(cont < cantCabezas + cantCabezasWeb ):#primero se calibran las cabezas
-                cv2.rectangle(imagen,(x+w,y),(x+2*w,y+h), color, grosorFigura)
-                recorte = imagen[y:y+h, x+w:x+2*w]
-                if not seEncontroPalma:
-                    seEncontroPalma, xm,ym,wm, hm = detectorPalma.detectar(recorte)
-                else:
-                    cv2.circle(imagen,(x+w+w/2, y+h/2),4, (0,0,255), grosorFigura)
-                    if(not seEncontroPuno):
-                        seEncontroPuno, xp,yp,wp,hp = detectorPuno.detectar(recorte)
-                    else:
-                        procesos[cont].start()
-                        cont += 1
-                        seEncontroPalma = False
-                        seEncontroPuno = False
-            else:    
-                if validadorDesp.validarDesplazamiento((x,y)):
-                    for e in eventos:
-                        e.set()
-           
-            imshow("webcam", imagen)
-        sleep(0.1)
-       
-        if waitKey(1) & 0xFF == ord('q'):
-            break;
+		
+	       
+		puntoDeteccion[0] = x+w/2
+		puntoDeteccion[1] = y+h/2
+		diametro.value = h 
+		if seEncontroCara:
+		    if(cont < cantCabezas + cantCabezasWeb ):#primero se calibran las cabezas
+		        cv2.rectangle(imagen,(x+w,y),(x+2*w,y+h), color, grosorFigura)
+		        recorte = imagen[y:y+h, x+w:x+2*w]
+		        if not seEncontroPalma:
+		            seEncontroPalma, xm,ym,wm, hm = detectorPalma.detectar(recorte)
+		        else:
+		            cv2.circle(imagen,(x+w+w/2, y+h/2),4, (0,0,255), grosorFigura)
+		            if(not seEncontroPuno):
+		                seEncontroPuno, xp,yp,wp,hp = detectorPuno.detectar(recorte)
+		            else:
+		                procesos[cont].start()
+		                cont += 1
+		                seEncontroPalma = False
+		                seEncontroPuno = False
+		    else:    
+		        if validadorDesp.validarDesplazamiento((x,y)):
+		            for e in eventos:
+		                e.set()
+		   
+		    imshow("webcam", imagen)
+		sleep(0.1)
+	       
+		if waitKey(1) & 0xFF == ord('q'):
+		    break;
+ 
         
 if __name__ == '__main__':
     multiprocessing.freeze_support()
