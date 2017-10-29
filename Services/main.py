@@ -117,7 +117,7 @@ def main():
     cont= 0
     
     #botones
-    botonSalir = Boton.Boton(Boton.salir,(ancho, alto), "manito.png")
+    botonSalir = Boton.Boton(Boton.salir,(ancho, alto), "botonRojo.jpg")
     for i in range(0, cantCabezas):
         c = None
         eventos.append(Event())
@@ -131,12 +131,11 @@ def main():
         imagen = cv2.flip(imagen, 1)
 
         seEncontroCara, x,y,w,h = detectorCara.detectar(imagen)   
-        imagen, ranX, ranY = botonSalir.posicionar(x, y, imagen, (ancho,alto))
         seEncontroPunio, xP,yP,wP,hP = detectorPunio.detectar(imagen)
+        imagen, ranX, ranY = botonSalir.posicionar(x, y, imagen, (ancho,alto))
         cv2.rectangle(imagen,(xP,yP),(xP+wP,yP+hP), color, grosorFigura)
 
-        print("-------------------------------------------")
-        if(seEncontroPunio and estaEnRango(xP,ranX) and estaEnRango(yP, ranY)):
+        if(seEncontroPunio and estaEnRango(xP+(xP/2),ranX) and estaEnRango(yP+(yP/2), ranY)):
             botonSalir.apretar()
    
         puntoDeteccion[0] = x+w/2
