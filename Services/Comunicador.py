@@ -1,4 +1,4 @@
-import RPi.GPIO as GPIO    #Importamos la libreria RPi.GPIO
+#import RPi.GPIO as GPIO    #Importamos la libreria RPi.GPIO
 import time                #Importamos time para poder usar time.sleep              #Importamos time para poder usar time.sleep
 import random
 
