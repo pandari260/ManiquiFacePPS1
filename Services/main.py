@@ -2,7 +2,6 @@ from cv2 import *
 import cv2 
 from ValidadorDesplazamiento import ValidadorDesplazamiento 
 import Calculador 
-import math 
 import numpy as np 
 import Cabeza as Cabeza 
 from multiprocessing import Process, Array, Value, Event 
@@ -13,9 +12,10 @@ from time import sleep
 from DectectorDeObjetos import DetectorDeObjetos 
 from ReconocedorFacial import ReconocerdorFacial 
 from Comunicador import Comunicador 
+from Boton import Boton
 import time 
-ancho = 320 
-alto = 240 
+ancho = 320.0 
+alto = 240.0 
 puntoCentro = (ancho/2,alto/2) 
 color = (0,255,0) 
 grosorFigura = 3 
@@ -81,25 +81,37 @@ def controlarRobot(cabeza, id, punto, diametro, puntoMedio,  eventoMover):
         eventoMover.clear()
         
 def main():
+    #detectores de objetos
     detectorCara = DetectorDeObjetos('cascade.xml')
     detectorPalma = ReconocerdorFacial('palm.xml')
     detectorPuno = ReconocerdorFacial('fist.xml')
+    
+    #banderas
     seEncontroPalma = False
     seEncontroPuno = False
+    
+    #inicializacion de la camara
     vc = VideoCapture(0)
     vc.set(cv2.CAP_PROP_FRAME_WIDTH, ancho)
     vc.set(cv2.CAP_PROP_FRAME_HEIGHT, alto)
     validadorDesp = ValidadorDesplazamiento(puntoCentro)
     namedWindow("webcam")
     
+    #objetos compratidos entre procesos
     puntoDeteccion = Array('i', 2)
     diametro = Value('i')
    
+   #declaracion de procesos
     procesos = []
     eventos = []
+    
+    #cantidad de cabezas
     cantCabezas = 1
     cantCabezasWeb = 0
     cont= 0
+    
+    #botones
+    botonCalibrar = Boton((ancho, alto), "manito.png")
     for i in range(0, cantCabezas):
         c = None
         eventos.append(Event())
@@ -138,7 +150,8 @@ def main():
                     for e in eventos:
                         print("entro")
                         e.set()
-                        
+            
+            imagen = botonCalibrar.insertarBotonImagen(x, y, imagen, (ancho,alto))
             imshow("webcam", imagen)
         sleep(0.1)
        
