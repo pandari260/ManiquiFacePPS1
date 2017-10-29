@@ -26,8 +26,7 @@ textoCalibracion = 'Cabeza'
 textoRecalibrar = "presione R para recalibrar" 
 PORT = 8080
 def estaEnRango(valor, rango):
-    print("valor: " + str(valor))
-    print("rango: " + str(rango))
+  
     return valor >= rango[0] and valor <= rango[1]
     
 def controlarThreejs(cabeza, id, punto, diametro, puntoMedio):
@@ -116,32 +115,57 @@ def main():
     cantCabezasWeb = 0
     cont= 0
     
-    #botones
-    botonSalir = Boton.Boton(Boton.salir,(ancho, alto), "botonRojo.jpg")
+   
     for i in range(0, cantCabezas):
         c = None
         eventos.append(Event())
         procesos.append(Process(target= controlarRobot,  args=(c, i,puntoDeteccion,diametro, puntoCentro, eventos[0])))
     cabezaWeb = None
     procesos.append(Process(target= controlarThreejs, args = (cabezaWeb, 3, puntoDeteccion, diametro, puntoCentro)))
+    
+     #botones
+    botonSalir = Boton.Boton(Boton.salir,(ancho, alto), "botonRojo.jpg")
+    botonPredefinido = Boton.Boton(Boton.movimientoPredefinido,(ancho, alto), "manito.png")
+    botonPredefinido1 = Boton.Boton(Boton.movimientoPredefinido,(ancho, alto), "manito.png")
+    botonPredefinido2 = Boton.Boton(Boton.movimientoPredefinido,(ancho, alto), "manito.png")
+    botonPredefinido3 = Boton.Boton(Boton.movimientoPredefinido,(ancho, alto), "manito.png")
+    botonPredefinido4 = Boton.Boton(Boton.movimientoPredefinido,(ancho, alto), "manito.png")
+
+    botones = []
+    botones.append(botonSalir)
+    botones.append(botonPredefinido)
+    botones.append(botonPredefinido1)
+    botones.append(botonPredefinido2)
+    #botones.append(botonPredefinido3)
+    #botones.append(botonPredefinido4)
 
     while True:
 
         va, imagen = vc.read()
         imagen = cv2.flip(imagen, 1)
 
-        seEncontroCara, x,y,w,h = detectorCara.detectar(imagen)   
-        seEncontroPunio, xP,yP,wP,hP = detectorPunio.detectar(imagen)
-        imagen, ranX, ranY = botonSalir.posicionar(x, y, imagen, (ancho,alto))
-        cv2.rectangle(imagen,(xP,yP),(xP+wP,yP+hP), color, grosorFigura)
-
-        if(seEncontroPunio and estaEnRango(xP+(xP/2),ranX) and estaEnRango(yP+(yP/2), ranY)):
-            botonSalir.apretar()
+        seEncontroCara, x,y,w,h = detectorCara.detectar(imagen)
+           
+        
    
         puntoDeteccion[0] = x+w/2
         puntoDeteccion[1] = y+h/2
         diametro.value = h 
         if seEncontroCara:
+            
+            for i in range(len(botones)):
+                botones[i].posicionar(x+300*i, y, imagen, (ancho,alto))
+            recorteBotones = imagen[botones[0].posY[0]:botones[0].posY[1], botones[0].posX[0]: botones[len(botones)-1].posX[1]]
+            seEncontroPunio, xP,yP,wP,hP = detectorPunio.detectar(recorteBotones)
+            cv2.rectangle(imagen,(xP,yP),(xP+wP,yP+hP), color, grosorFigura)
+            for i in range(len(botones)):
+                imagen = botones[i].dibujar(imagen)
+                if(seEncontroPunio and estaEnRango(xP,botones[i].posX) and estaEnRango(yP, botones[i].posY)):
+                    botones[i].apretar()
+                
+                    
+                    
+                    
             if(cont < cantCabezas + cantCabezasWeb ):#primero se calibran las cabezas
                 cv2.rectangle(imagen,(x+w,y),(x+2*w,y+h), color, grosorFigura)
                 recorte = imagen[y:y+h, x+w:x+2*w]
