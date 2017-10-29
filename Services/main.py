@@ -12,8 +12,9 @@ from time import sleep
 from DectectorDeObjetos import DetectorDeObjetos 
 from ReconocedorFacial import ReconocerdorFacial 
 from Comunicador import Comunicador 
-from Boton import Boton
-import time 
+import Boton
+import time
+import sys 
 ancho = 320.0 
 alto = 240.0 
 puntoCentro = (ancho/2,alto/2) 
@@ -24,7 +25,11 @@ textoInicio = ' coloque la palma de la mano en el recuadro para calibrar'
 textoCalibracion = 'Cabeza' 
 textoRecalibrar = "presione R para recalibrar" 
 PORT = 8080
-
+def estaEnRango(valor, rango):
+    print("valor: " + str(valor))
+    print("rango: " + str(rango))
+    return valor >= rango[0] and valor <= rango[1]
+    
 def controlarThreejs(cabeza, id, punto, diametro, puntoMedio):
     x = punto[0]
     y = punto[1]
@@ -83,6 +88,7 @@ def controlarRobot(cabeza, id, punto, diametro, puntoMedio,  eventoMover):
 def main():
     #detectores de objetos
     detectorCara = DetectorDeObjetos('cascade.xml')
+    detectorPunio = DetectorDeObjetos('fist.xml')
     detectorPalma = ReconocerdorFacial('palm.xml')
     detectorPuno = ReconocerdorFacial('fist.xml')
     
@@ -111,7 +117,7 @@ def main():
     cont= 0
     
     #botones
-    botonCalibrar = Boton((ancho, alto), "manito.png")
+    botonSalir = Boton.Boton(Boton.salir,(ancho, alto), "manito.png")
     for i in range(0, cantCabezas):
         c = None
         eventos.append(Event())
@@ -125,7 +131,13 @@ def main():
         imagen = cv2.flip(imagen, 1)
 
         seEncontroCara, x,y,w,h = detectorCara.detectar(imagen)   
-        cv2.rectangle(imagen,(320,120),(320,120), color, grosorFigura)
+        imagen, ranX, ranY = botonSalir.posicionar(x, y, imagen, (ancho,alto))
+        seEncontroPunio, xP,yP,wP,hP = detectorPunio.detectar(imagen)
+        cv2.rectangle(imagen,(xP,yP),(xP+wP,yP+hP), color, grosorFigura)
+
+        print("-------------------------------------------")
+        if(seEncontroPunio and estaEnRango(xP,ranX) and estaEnRango(yP, ranY)):
+            botonSalir.apretar()
    
         puntoDeteccion[0] = x+w/2
         puntoDeteccion[1] = y+h/2
@@ -151,12 +163,11 @@ def main():
                         print("entro")
                         e.set()
             
-            imagen = botonCalibrar.insertarBotonImagen(x, y, imagen, (ancho,alto))
             imshow("webcam", imagen)
         sleep(0.1)
        
         if waitKey(1) & 0xFF == ord('q'):
-            break;
+            sys.exit()
  
         
 if __name__ == '__main__':
