@@ -214,10 +214,12 @@ def funcionMovimientoPredefinido(secuencia, cant):
 def main():
     detectorPalma = DetectorDeObjetos('fist.xml')  
     
-     #botones
-    botonPredefinido = Boton.Boton(funcionMovimientoPredefinido, (10,50), "botonRojo.jpg", Secuencia.Secuencia(Secuencia.hardcodeada, (320,240)), 3)
-    botonCabezaVirtual = Boton.Boton(funcionCabezasRoboticas, (110, 50), "manito.png", 0,1)
-    botonCabezaRobotica = Boton.Boton(funcionCabezasRoboticas,(210, 50), "botonRojo.jpg", 1, 0)
+    pos1 = (10,50)
+    pos2 = (110, 50)
+    pos3 = (210, 50)
+    botonPredefinido = Boton.Boton(funcionMovimientoPredefinido, pos1, "botonRojo.jpg", Secuencia.Secuencia(Secuencia.hardcodeada, (320,240)), 3)
+    botonCabezaVirtual = Boton.Boton(funcionCabezasRoboticas, pos2, "manito.png", 0,1)
+    botonCabezaRobotica = Boton.Boton(funcionCabezasRoboticas,pos3, "botonRojo.jpg", 1, 0)
     
 
     botones = []
@@ -230,9 +232,13 @@ def main():
           
     while not seApretoUnBoton:
         imagen = sacarFoto()
+        #texto de la interface
 
         seEncontroMano, xM, yM, wM, hM = detectorPalma.detectar(imagen)
+
         if (seEncontroMano):
+            cv2.putText(imagen,'Elija una opcion',(10,30), cv2.FONT_ITALIC, 1,(255,255,255),2,cv2.LINE_4)
+
             cv2.rectangle(imagen,(xM+wM,yM),(xM+2*wM,yM+hM), color, grosorFigura)
             for boton in botones:
                 imagen = boton.dibujar(imagen)
