@@ -26,7 +26,6 @@ textoCalibracion = 'Cabeza'
 textoRecalibrar = "presione R para recalibrar" 
 PORT = 8080
 
-namedWindow("ManiquiFace")
 
 #inicializacion de la camara
 vc = VideoCapture(0)
@@ -160,6 +159,7 @@ def funcionCabezasRoboticas():
                         cont += 1
                         seEncontroPalma = False
                         seEncontroPuno = False
+                        destroyWindow("ManiquiFace")
             else:    
                 if validadorDesp.validarDesplazamiento((x,y)):
                     for e in eventos:
