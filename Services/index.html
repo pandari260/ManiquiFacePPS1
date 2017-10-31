@@ -121,7 +121,11 @@
         };
 
         var iniciar = function() {
-            requestAnimationFrame(iniciar);
+            setTimeout(function() {
+
+                requestAnimationFrame(iniciar);
+
+            }, 1000 / 30);
             update();
             render();
         };
