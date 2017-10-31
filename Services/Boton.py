@@ -20,7 +20,7 @@ class Boton(object):
         img[self.posY:self.posY + self.redimensionada.shape[0], self.posX:self.posX+ self.redimensionada.shape[1]] = self.redimensionada
         return img
     def apretar(self):
-        self.accion(self.argumentos)
+        self.accion(self.argumentos[0], self.argumentos[1])
 
 
         
