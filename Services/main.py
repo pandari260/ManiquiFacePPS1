@@ -25,9 +25,26 @@ textoInicio = ' coloque la palma de la mano en el recuadro para calibrar'
 textoCalibracion = 'Cabeza' 
 textoRecalibrar = "presione R para recalibrar" 
 PORT = 8080
-def estaEnRango(valor, rango):
-  
-    return valor >= rango[0] and valor <= rango[1]
+
+namedWindow("ManiquiFace")
+
+#inicializacion de la camara
+vc = VideoCapture(0)
+vc.set(cv2.CAP_PROP_FRAME_WIDTH, ancho)
+vc.set(cv2.CAP_PROP_FRAME_HEIGHT, alto)
+
+def sacarFoto():
+    _, imagen = vc.read()
+    return cv2.flip(imagen, 1)
+
+
+def seDebeApretar(x, y, boton):
+    print("x: " + str(x) + " rango: " + str(boton.posX) + " , " + str(boton.posX + boton.tam))
+    print("y: " + str(y) + " rango: " + str(boton.posY) + " , " + str(boton.posY + boton.tam))
+    print("____________________________________________________________________________________")
+
+    return (x >= boton.posX and x <= (boton.posX + boton.tam)) and (y >= boton.posY and y <= (boton.posY + boton.tam))
+
     
 def controlarThreejs(cabeza, id, punto, diametro, puntoMedio):
     x = punto[0]
@@ -84,10 +101,11 @@ def controlarRobot(cabeza, id, punto, diametro, puntoMedio,  eventoMover):
             predeV = gy
         eventoMover.clear()
         
-def main():
+
+    
+def funcionCabezasRoboticas():
     #detectores de objetos
     detectorCara = DetectorDeObjetos('cascade.xml')
-    detectorPunio = DetectorDeObjetos('fist.xml')
     detectorPalma = ReconocerdorFacial('palm.xml')
     detectorPuno = ReconocerdorFacial('fist.xml')
     
@@ -95,27 +113,23 @@ def main():
     seEncontroPalma = False
     seEncontroPuno = False
     
-    #inicializacion de la camara
-    vc = VideoCapture(0)
-    vc.set(cv2.CAP_PROP_FRAME_WIDTH, ancho)
-    vc.set(cv2.CAP_PROP_FRAME_HEIGHT, alto)
     validadorDesp = ValidadorDesplazamiento(puntoCentro)
-    namedWindow("webcam")
+    
     
     #objetos compratidos entre procesos
     puntoDeteccion = Array('i', 2)
-    diametro = Value('i')
-   
-   #declaracion de procesos
-    procesos = []
-    eventos = []
+    diametro = Value('i') 
     
     #cantidad de cabezas
     cantCabezas = 1
     cantCabezasWeb = 0
-    cont= 0
+    cont= 0             
+               
+    #declaracion de procesos
+    procesos = []
+    eventos = []
     
-   
+    #instansiacion de procesos
     for i in range(0, cantCabezas):
         c = None
         eventos.append(Event())
@@ -123,49 +137,15 @@ def main():
     cabezaWeb = None
     procesos.append(Process(target= controlarThreejs, args = (cabezaWeb, 3, puntoDeteccion, diametro, puntoCentro)))
     
-     #botones
-    botonSalir = Boton.Boton(Boton.salir,(ancho, alto), "botonRojo.jpg")
-    botonPredefinido = Boton.Boton(Boton.movimientoPredefinido,(ancho, alto), "manito.png")
-    botonPredefinido1 = Boton.Boton(Boton.movimientoPredefinido,(ancho, alto), "manito.png")
-    botonPredefinido2 = Boton.Boton(Boton.movimientoPredefinido,(ancho, alto), "manito.png")
-    botonPredefinido3 = Boton.Boton(Boton.movimientoPredefinido,(ancho, alto), "manito.png")
-    botonPredefinido4 = Boton.Boton(Boton.movimientoPredefinido,(ancho, alto), "manito.png")
-
-    botones = []
-    botones.append(botonSalir)
-    botones.append(botonPredefinido)
-    botones.append(botonPredefinido1)
-    botones.append(botonPredefinido2)
-    #botones.append(botonPredefinido3)
-    #botones.append(botonPredefinido4)
-
     while True:
-
-        va, imagen = vc.read()
-        imagen = cv2.flip(imagen, 1)
+        imagen = sacarFoto()
+        
 
         seEncontroCara, x,y,w,h = detectorCara.detectar(imagen)
-           
-        
-   
         puntoDeteccion[0] = x+w/2
         puntoDeteccion[1] = y+h/2
         diametro.value = h 
         if seEncontroCara:
-            
-            for i in range(len(botones)):
-                botones[i].posicionar(x+300*i, y, imagen, (ancho,alto))
-            recorteBotones = imagen[botones[0].posY[0]:botones[0].posY[1], botones[0].posX[0]: botones[len(botones)-1].posX[1]]
-            seEncontroPunio, xP,yP,wP,hP = detectorPunio.detectar(recorteBotones)
-            cv2.rectangle(imagen,(xP,yP),(xP+wP,yP+hP), color, grosorFigura)
-            for i in range(len(botones)):
-                imagen = botones[i].dibujar(imagen)
-                if(seEncontroPunio and estaEnRango(xP,botones[i].posX) and estaEnRango(yP, botones[i].posY)):
-                    botones[i].apretar()
-                
-                    
-                    
-                    
             if(cont < cantCabezas + cantCabezasWeb ):#primero se calibran las cabezas
                 cv2.rectangle(imagen,(x+w,y),(x+2*w,y+h), color, grosorFigura)
                 recorte = imagen[y:y+h, x+w:x+2*w]
@@ -186,13 +166,48 @@ def main():
                         print("entro")
                         e.set()
             
-            imshow("webcam", imagen)
+            imshow("ManiquiFace", imagen)
         sleep(0.1)
        
         if waitKey(1) & 0xFF == ord('q'):
             sys.exit()
- 
-        
+
+def main():
+    detectorPalma = DetectorDeObjetos('fist.xml')  
+    
+     #botones
+    botonPredefinido = Boton.Boton(funcionCabezasRoboticas, (50,50), "botonRojo.jpg")
+    botonCabezaVirtual = Boton.Boton(funcionCabezasRoboticas, (120, 50), "manito.png")
+    botonCabezaRobotica = Boton.Boton(funcionCabezasRoboticas,(190, 50), "botonRojo.jpg")
+    
+
+    botones = []
+    botones.append(botonPredefinido)
+    botones.append(botonCabezaVirtual)
+    
+    seApretoUnBoton =False
+    eleccion = None
+          
+    while not seApretoUnBoton:
+        imagen = sacarFoto()
+
+        seEncontroMano, xM, yM, wM, hM = detectorPalma.detectar(imagen)
+        if (seEncontroMano):
+            cv2.rectangle(imagen,(xM+wM,yM),(xM+2*wM,yM+hM), color, grosorFigura)
+            for boton in botones:
+                imagen = boton.dibujar(imagen)
+                if(not seApretoUnBoton and seDebeApretar(xM, yM, boton)):
+                    eleccion = boton.apretar()
+                    seApretoUnBoton = True
+        imshow("ManiquiFace", imagen)
+
+        if waitKey(1) & 0xFF == ord('q'):
+            break;
+    destroyWindow("ManiquiFace")
+                   
+    eleccion()
+
+
 if __name__ == '__main__':
     multiprocessing.freeze_support()
     main()
