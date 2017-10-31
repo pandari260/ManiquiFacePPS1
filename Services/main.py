@@ -15,6 +15,8 @@ from Comunicador import Comunicador
 import Boton
 import time
 import sys 
+
+import Secuencia
 ancho = 320.0 
 alto = 240.0 
 puntoCentro = (ancho/2,alto/2) 
@@ -38,10 +40,6 @@ def sacarFoto():
 
 
 def seDebeApretar(x, y, boton):
-    print("x: " + str(x) + " rango: " + str(boton.posX) + " , " + str(boton.posX + boton.tam))
-    print("y: " + str(y) + " rango: " + str(boton.posY) + " , " + str(boton.posY + boton.tam))
-    print("____________________________________________________________________________________")
-
     return (x >= boton.posX and x <= (boton.posX + boton.tam)) and (y >= boton.posY and y <= (boton.posY + boton.tam))
 
     
@@ -172,11 +170,53 @@ def funcionCabezasRoboticas():
         if waitKey(1) & 0xFF == ord('q'):
             sys.exit()
 
+def funcionMovimientoPredefinido():
+    #cantidad de cabezas
+    cantCabezas = 1
+    cont= 0        
+    
+    #declaracion de procesos
+    procesos = []
+    eventos = []
+    
+    #objetos compratidos entre procesos
+    puntoDeteccion = Array('i', 2)
+    diametro = Value('i') 
+    secuencia = Secuencia.Secuencia(Secuencia.hardcodeada, (320,240))
+    pasoInicial = secuencia.posIncial
+    puntoDeteccion[0] = pasoInicial[0]
+    puntoDeteccion[1] = pasoInicial[1]
+    diametro.value = secuencia.diametro
+
+    #instansiacion de procesos
+    for i in range(0, cantCabezas):
+        c = None
+        eventos.append(Event())
+        procesos.append(Process(target= controlarRobot,  args=(c, i,puntoDeteccion,diametro, puntoCentro, eventos[0])))
+        procesos[i].start()
+    
+    while True:
+        paso = secuencia.getNext()
+        x = paso["x"]
+        y = paso["y"]
+        
+        puntoDeteccion[0] = x
+        puntoDeteccion[1] = y
+        diametro.value = secuencia.diametro
+        
+        for e in eventos:
+            e.set()            
+        sleep(paso["sleep"])
+        
+        if waitKey(1) & 0xFF == ord('q'):
+            sys.exit()
+        
+    
 def main():
     detectorPalma = DetectorDeObjetos('fist.xml')  
     
      #botones
-    botonPredefinido = Boton.Boton(funcionCabezasRoboticas, (50,50), "botonRojo.jpg")
+    botonPredefinido = Boton.Boton(funcionMovimientoPredefinido, (50,50), "botonRojo.jpg")
     botonCabezaVirtual = Boton.Boton(funcionCabezasRoboticas, (120, 50), "manito.png")
     botonCabezaRobotica = Boton.Boton(funcionCabezasRoboticas,(190, 50), "botonRojo.jpg")
     
@@ -184,6 +224,7 @@ def main():
     botones = []
     botones.append(botonPredefinido)
     botones.append(botonCabezaVirtual)
+    botones.append(botonCabezaRobotica)
     
     seApretoUnBoton =False
     eleccion = None
@@ -200,7 +241,7 @@ def main():
                     eleccion = boton.apretar()
                     seApretoUnBoton = True
         imshow("ManiquiFace", imagen)
-
+        sleep(0.1)
         if waitKey(1) & 0xFF == ord('q'):
             break;
     destroyWindow("ManiquiFace")
