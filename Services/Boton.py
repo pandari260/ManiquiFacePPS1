@@ -5,16 +5,16 @@ import sys
 pd = 5
 class Boton(object):
    
-    def __init__(self, f, p, path):
+    def __init__(self, f, path):
         self.imagen = imread(path)
         self.accion = f
         self.posX = None
         self.posY = None
-        self.redimensionada = None
+        #achicar la imagen directamente. Para no hace esto
+        self.redimensionada = resize(self.imagen, None,fx = 0.1, fy = 0.1, interpolation = INTER_CUBIC)
                  
     def posicionar(self, x,y, img, resolucion):
        
-        self.redimensionada = resize(self.imagen, None,fx = 0.1, fy = 0.1, interpolation = INTER_CUBIC)
         self.posY = (y/pd,y/pd+self.redimensionada.shape[0])
         self.posX = (x/pd,x/pd+self.redimensionada.shape[1])
         
@@ -30,7 +30,7 @@ def salir():
     sys.exit()
     
 def movimientoPredefinido():
-    print("se apreto el boton de calibrar")
+    print("se apreto el boton")
     pass
 
         
