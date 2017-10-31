@@ -238,7 +238,7 @@ def main():
             for boton in botones:
                 imagen = boton.dibujar(imagen)
                 if(not seApretoUnBoton and seDebeApretar(xM, yM, boton)):
-                    eleccion = boton.apretar()
+                    eleccion = boton
                     seApretoUnBoton = True
         imshow("ManiquiFace", imagen)
         sleep(0.1)
@@ -246,7 +246,7 @@ def main():
             break;
     destroyWindow("ManiquiFace")
                    
-    eleccion()
+    eleccion.apretar()
 
 
 if __name__ == '__main__':
