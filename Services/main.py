@@ -100,7 +100,7 @@ def controlarRobot(cabeza, id, punto, diametro, puntoMedio,  eventoMover):
         
 
     
-def funcionCabezasRoboticas():
+def funcionCabezasRoboticas(cantidades):
     #detectores de objetos
     detectorCara = DetectorDeObjetos('cascade.xml')
     detectorPalma = ReconocerdorFacial('palm.xml')
@@ -118,8 +118,8 @@ def funcionCabezasRoboticas():
     diametro = Value('i') 
     
     #cantidad de cabezas
-    cantCabezas = 1
-    cantCabezasWeb = 0
+    cantCabezas = cantidades[0]
+    cantCabezasWeb = cantidades[1]
     cont= 0             
                
     #declaracion de procesos
@@ -170,7 +170,7 @@ def funcionCabezasRoboticas():
         if waitKey(1) & 0xFF == ord('q'):
             sys.exit()
 
-def funcionMovimientoPredefinido():
+def funcionMovimientoPredefinido(secuencia):
     #cantidad de cabezas
     cantCabezas = 1
     cont= 0        
@@ -182,11 +182,11 @@ def funcionMovimientoPredefinido():
     #objetos compratidos entre procesos
     puntoDeteccion = Array('i', 2)
     diametro = Value('i') 
-    secuencia = Secuencia.Secuencia(Secuencia.hardcodeada, (320,240))
-    pasoInicial = secuencia.posIncial
+
+    pasoInicial = secuencia[0].posIncial
     puntoDeteccion[0] = pasoInicial[0]
     puntoDeteccion[1] = pasoInicial[1]
-    diametro.value = secuencia.diametro
+    diametro.value = secuencia[0].diametro
 
     #instansiacion de procesos
     for i in range(0, cantCabezas):
@@ -196,13 +196,13 @@ def funcionMovimientoPredefinido():
         procesos[i].start()
     
     while True:
-        paso = secuencia.getNext()
+        paso = secuencia[0].getNext()
         x = paso["x"]
         y = paso["y"]
         
         puntoDeteccion[0] = x
         puntoDeteccion[1] = y
-        diametro.value = secuencia.diametro
+        diametro.value = secuencia[0].diametro
         
         for e in eventos:
             e.set()            
@@ -216,9 +216,9 @@ def main():
     detectorPalma = DetectorDeObjetos('fist.xml')  
     
      #botones
-    botonPredefinido = Boton.Boton(funcionMovimientoPredefinido, (50,50), "botonRojo.jpg")
-    botonCabezaVirtual = Boton.Boton(funcionCabezasRoboticas, (120, 50), "manito.png")
-    botonCabezaRobotica = Boton.Boton(funcionCabezasRoboticas,(190, 50), "botonRojo.jpg")
+    botonPredefinido = Boton.Boton(funcionMovimientoPredefinido, (50,50), "botonRojo.jpg", Secuencia.Secuencia(Secuencia.hardcodeada, (320,240)))
+    botonCabezaVirtual = Boton.Boton(funcionCabezasRoboticas, (120, 50), "manito.png", 0,1)
+    botonCabezaRobotica = Boton.Boton(funcionCabezasRoboticas,(190, 50), "botonRojo.jpg", 1, 0)
     
 
     botones = []
