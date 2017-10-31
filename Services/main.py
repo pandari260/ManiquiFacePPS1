@@ -216,9 +216,9 @@ def main():
     detectorPalma = DetectorDeObjetos('fist.xml')  
     
      #botones
-    botonPredefinido = Boton.Boton(funcionMovimientoPredefinido, (50,50), "botonRojo.jpg", Secuencia.Secuencia(Secuencia.hardcodeada, (320,240)))
-    botonCabezaVirtual = Boton.Boton(funcionCabezasRoboticas, (120, 50), "manito.png", 0,1)
-    botonCabezaRobotica = Boton.Boton(funcionCabezasRoboticas,(190, 50), "botonRojo.jpg", 1, 0)
+    botonPredefinido = Boton.Boton(funcionMovimientoPredefinido, (10,50), "botonRojo.jpg", Secuencia.Secuencia(Secuencia.hardcodeada, (320,240)))
+    botonCabezaVirtual = Boton.Boton(funcionCabezasRoboticas, (135, 50), "manito.png", 0,1)
+    botonCabezaRobotica = Boton.Boton(funcionCabezasRoboticas,(260, 50), "botonRojo.jpg", 1, 0)
     
 
     botones = []
