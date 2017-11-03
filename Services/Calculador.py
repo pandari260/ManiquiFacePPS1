@@ -37,8 +37,9 @@ def calcularPosicionCabeza(puntoCentro, posicion, diametro ):
 
 def calcularPuntoCalibracion(cabeza, distancia, puntoCentro):
     
-    x = int(calcularEjeCalibracion(cabeza.posicion[0], distancia, puntoCentro[0]))
-    y = int(calcularEjeCalibracion(cabeza.posicion[1], distancia, puntoCentro[1]))
+    amplitud = calcularAmplitud(distancia)
+    x = int(calcularEjeCalibracion(cabeza.posicion[0], amplitud, puntoCentro[0]))
+    y = int(calcularEjeCalibracion(cabeza.posicion[1], amplitud, puntoCentro[1]))
     return (x,y)
 
 def calcularAmplitud(d):
