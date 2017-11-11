@@ -12,6 +12,7 @@ class DetectorHaar(object):
 
     def detectarTodos(self, imagen):
         gris = cv2.cvtColor(imagen, cv2.COLOR_BGR2GRAY) #aplicamos filtro para poner la imagen en blanco y negro
+        cv2.equalizeHist(gris, gris)
         rostrosFrontal = self.clasificador.detectMultiScale( gris, scaleFactor = 1.2, minNeighbors = 5, minSize= (30,30), flags = cv2.CASCADE_SCALE_IMAGE)
         return rostrosFrontal;
         

@@ -214,9 +214,9 @@ def funcionMovimientoPredefinido(secuencia, cant):
 def main():
     detectorPalma = DetectorDeObjetos('fist.xml')  
     
-    pos1 = (10,50)
-    pos2 = (110, 50)
-    pos3 = (210, 50)
+    pos1 = (10,10)
+    pos2 = (10, 80)
+    pos3 = (10, 150)
     botonPredefinido = Boton.Boton(funcionMovimientoPredefinido, pos1, "botonRojo.jpg", Secuencia.Secuencia(Secuencia.hardcodeada, (320,240)), 3)
     botonCabezaVirtual = Boton.Boton(funcionCabezasRoboticas, pos2, "manito.png", 0,1)
     botonCabezaRobotica = Boton.Boton(funcionCabezasRoboticas,pos3, "botonRojo.jpg", 1, 0)
