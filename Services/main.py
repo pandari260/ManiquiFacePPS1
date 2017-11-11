@@ -40,7 +40,7 @@ def sacarFoto():
 
 
 def seDebeApretar(x, y, boton):
-    return (x >= boton.posX and x <= (boton.posX + boton.tam)) and (y >= boton.posY and y <= (boton.posY + boton.tam))
+    return (x >= boton.posX and x <= (boton.posX + boton.tamX)) and (y >= boton.posY and y <= (boton.posY + boton.tamY))
 
     
 def controlarThreejs(cabeza, id, punto, diametro, puntoMedio):
@@ -213,13 +213,20 @@ def funcionMovimientoPredefinido(secuencia, cant):
     
 def main():
     detectorPalma = DetectorDeObjetos('fist.xml')  
+    fondo = cv2.imread("fondo.png")
     
-    pos1 = (10,10)
-    pos2 = (10, 80)
-    pos3 = (10, 150)
-    botonPredefinido = Boton.Boton(funcionMovimientoPredefinido, pos1, "botonRojo.jpg", Secuencia.Secuencia(Secuencia.hardcodeada, (320,240)), 3)
-    botonCabezaVirtual = Boton.Boton(funcionCabezasRoboticas, pos2, "manito.png", 0,1)
-    botonCabezaRobotica = Boton.Boton(funcionCabezasRoboticas,pos3, "botonRojo.jpg", 1, 0)
+    pos1 = (77,10)
+    pos2 = (77, 80)
+    pos3 = (77, 150)
+    botonPredefinido = Boton.Boton(funcionMovimientoPredefinido, pos1, "button_movimiento-predefinido.png", Secuencia.Secuencia(Secuencia.hardcodeada, (320,240)), 3)
+    botonCabezaVirtual = Boton.Boton(funcionCabezasRoboticas, pos2, "button_cabeza-virtual.png", 0,1)
+    botonCabezaRobotica = Boton.Boton(funcionCabezasRoboticas,pos3, "button_seguimiento-facial.png", 1, 0)
+    fondo = botonCabezaVirtual.dibujar(fondo)
+    fondo = botonPredefinido.dibujar(fondo)
+    fondo = botonCabezaRobotica.dibujar(fondo)
+
+
+
     
 
     botones = []
@@ -229,6 +236,7 @@ def main():
     
     seApretoUnBoton =False
     eleccion = None
+    fondoConPuntero = np.copy(fondo) 
           
     while not seApretoUnBoton:
         imagen = sacarFoto()
@@ -240,12 +248,15 @@ def main():
             cv2.putText(imagen,'Elija una opcion',(10,30), cv2.FONT_ITALIC, 1,(255,255,255),2,cv2.LINE_4)
 
             cv2.rectangle(imagen,(xM+wM,yM),(xM+2*wM,yM+hM), color, grosorFigura)
+            
+            fondoConPuntero = np.copy(fondo) 
+            circle(fondoConPuntero,(xM, yM), 10, (255,0,0), 3);
             for boton in botones:
-                imagen = boton.dibujar(imagen)
                 if(not seApretoUnBoton and seDebeApretar(xM, yM, boton)):
                     eleccion = boton
                     seApretoUnBoton = True
-        imshow("ManiquiFace", imagen)
+        imshow("ManiquiFace", fondoConPuntero)
+        imshow("imagen", imagen)
         sleep(0.1)
         if waitKey(1) & 0xFF == ord('q'):
             break;
