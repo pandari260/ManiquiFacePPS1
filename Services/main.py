@@ -213,11 +213,11 @@ def funcionMovimientoPredefinido(secuencia, cant):
     
 def main():
     detectorPalma = DetectorDeObjetos('fist.xml')  
-    fondo = cv2.imread("fondo.png")
+    fondo = cv2.imread("Fondo.png")
     
-    pos1 = (77,10)
-    pos2 = (77, 80)
-    pos3 = (77, 150)
+    pos1 = (10,50)
+    pos2 = (240, 50)
+    pos3 = (460, 50)
     botonPredefinido = Boton.Boton(funcionMovimientoPredefinido, pos1, "button_movimiento-predefinido.png", Secuencia.Secuencia(Secuencia.hardcodeada, (320,240)), 3)
     botonCabezaVirtual = Boton.Boton(funcionCabezasRoboticas, pos2, "button_cabeza-virtual.png", 0,1)
     botonCabezaRobotica = Boton.Boton(funcionCabezasRoboticas,pos3, "button_seguimiento-facial.png", 1, 0)
@@ -243,20 +243,22 @@ def main():
         #texto de la interface
 
         seEncontroMano, xM, yM, wM, hM = detectorPalma.detectar(imagen)
+        fondo[200:440,200:520] = imagen
+        fondoConPuntero = np.copy(fondo) 
+
+
 
         if (seEncontroMano):
             cv2.putText(imagen,'Elija una opcion',(10,30), cv2.FONT_ITALIC, 1,(255,255,255),2,cv2.LINE_4)
 
             cv2.rectangle(imagen,(xM+wM,yM),(xM+2*wM,yM+hM), color, grosorFigura)
             
-            fondoConPuntero = np.copy(fondo) 
-            circle(fondoConPuntero,(xM, yM), 10, (255,0,0), 3);
+            circle(fondoConPuntero,(xM*2, yM*2), 3, (255,0,0), 3);
             for boton in botones:
-                if(not seApretoUnBoton and seDebeApretar(xM, yM, boton)):
+                if(not seApretoUnBoton and seDebeApretar(xM*2, yM*2, boton)):
                     eleccion = boton
                     seApretoUnBoton = True
         imshow("ManiquiFace", fondoConPuntero)
-        imshow("imagen", imagen)
         sleep(0.1)
         if waitKey(1) & 0xFF == ord('q'):
             break;
