@@ -10,7 +10,7 @@ import Orientador
 import server 
 from time import sleep 
 from DectectorDeObjetos import DetectorDeObjetos 
-from ReconocedorFacial import ReconocerdorFacial 
+from Services.Deteccion import DetectorHaar 
 from Comunicador import Comunicador 
 import Boton
 import time
@@ -103,8 +103,8 @@ def controlarRobot(cabeza, id, punto, diametro, puntoMedio,  eventoMover):
 def funcionCabezasRoboticas(cRobot, cWeb):
     #detectores de objetos
     detectorCara = DetectorDeObjetos('cascade.xml')
-    detectorPalma = ReconocerdorFacial('palm.xml')
-    detectorPuno = ReconocerdorFacial('fist.xml')
+    detectorPalma = DetectorHaar('palm.xml')
+    detectorPuno = DetectorHaar('fist.xml')
     
     #banderas
     seEncontroPalma = False

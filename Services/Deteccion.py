@@ -1,6 +1,31 @@
-from cv2 import *
 import cv2
+from cv2 import *
 import numpy as np
+
+
+
+
+class DetectorHaar(object):
+    def __init__(self, hPath):
+        self.clasificador = cv2.CascadeClassifier(hPath)
+        
+
+    def detectarTodos(self, imagen):
+        gris = cv2.cvtColor(imagen, cv2.COLOR_BGR2GRAY) #aplicamos filtro para poner la imagen en blanco y negro
+        rostrosFrontal = self.clasificador.detectMultiScale( gris, scaleFactor = 1.2, minNeighbors = 5, minSize= (30,30), flags = cv2.CASCADE_SCALE_IMAGE)
+        return rostrosFrontal;
+        
+    def detectar(self,imagen):
+        seIndentifico = False
+        rostrosFrontal = self.detectarTodos(imagen)
+        if len(rostrosFrontal) == 1:
+            seIndentifico = True
+            for (x,y,w,h) in rostrosFrontal:
+                return seIndentifico, x,y,w,h
+            
+        return False,0,0,0,0
+    
+    
 
 limite = 10
 
@@ -45,3 +70,4 @@ class RastreadorFacial(object):
 
     def getTracker(self):
         return self.track_window
+       
